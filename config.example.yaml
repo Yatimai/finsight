@@ -1,0 +1,63 @@
+# config.yaml — Multimodal RAG for Financial Documents
+# Copy to config.yaml and fill in your API key.
+
+retrieval:
+  model: "vidore/colqwen2-v1.0"
+  top_k: 5
+  max_candidates: 20
+
+rewriting:
+  enabled: true
+  max_rewrites: 3           # 1 = simple rewrite, 3 = RAG Fusion
+  rrf_k: 60                 # RRF constant (standard = 60)
+
+generation:
+  model: "claude-sonnet-4-5-20250929"
+  max_tokens: 1024
+  temperature: 0.0
+
+verification:
+  model: "claude-opus-4-6"
+  enabled: true
+  mode: "batch_async"       # "sync" | "batch_async" | "disabled"
+  confidence_threshold: 0.7
+  abstention_message: "Cette information n'apparaît pas dans les documents fournis."
+
+caching:
+  semantic_cache_enabled: true
+  similarity_threshold: 0.98    # High threshold to avoid "CA 2023" ≈ "CA 2022" false hits
+  prompt_cache_ttl: "1h"
+  max_cache_entries: 1000
+
+qdrant:
+  mode: "embedded"          # "embedded" | "remote"
+  path: "./data/qdrant"
+  collection_name: "financial_pages"
+  # remote_url: "https://..."
+
+error_handling:
+  generation_max_retries: 3
+  verification_max_retries: 5
+  rewriting_max_retries: 1
+  rewriting_fallback: "raw_query"
+  backoff_base: 2
+  use_retry_after_header: true
+
+security:
+  prompt_separation: true
+  output_citation_check: true
+  log_anomalies: true
+
+observability:
+  log_level: "INFO"
+  trace_all_requests: true
+  export_metrics: true
+
+anthropic:
+  api_key: ""               # Or set ANTHROPIC_API_KEY env var
+
+data:
+  documents_dir: "./data/documents"
+  pages_dir: "./data/pages"
+  dpi: 300                  # PDF to image resolution
+  batch_size: 8             # Pages per batch for GPU encoding
