@@ -29,3 +29,10 @@ frontend/.next/
 # Logs
 *.log
 logs/
+
+# Testing/Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
