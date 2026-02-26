@@ -1,0 +1,42 @@
+"""Tests for configuration loading."""
+
+import os
+from unittest.mock import patch
+
+from app.config import AppConfig, CachingConfig, load_config, reset_config
+
+
+class TestAppConfig:
+    def test_default_config(self):
+        config = AppConfig()
+        assert config.retrieval.model == "vidore/colqwen2-v1.0"
+        assert config.retrieval.top_k == 5
+        assert config.generation.model == "claude-sonnet-4-5-20250929"
+        assert config.verification.model == "claude-opus-4-6"
+        assert config.verification.mode == "batch_async"
+        assert config.caching.similarity_threshold == 0.98
+        assert config.qdrant.mode == "embedded"
+
+    def test_cache_threshold_is_098(self):
+        """Regression: threshold must be 0.98, not 0.95.
+        'CA 2023' vs 'CA 2022' must NOT be a cache hit."""
+        config = CachingConfig()
+        assert config.similarity_threshold == 0.98
+
+    def test_load_config_missing_file(self):
+        reset_config()
+        config = load_config("/nonexistent/path/config.yaml")
+        assert isinstance(config, AppConfig)
+        assert config.retrieval.model == "vidore/colqwen2-v1.0"
+
+    def test_env_var_override(self):
+        reset_config()
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key-123"}):
+            config = load_config("/nonexistent/path/config.yaml")
+            assert config.anthropic.api_key == "test-key-123"
+
+    def test_reset_config(self):
+        reset_config()
+        from app.config import _config
+
+        assert _config is None
