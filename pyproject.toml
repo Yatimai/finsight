@@ -64,7 +64,6 @@ markers = [
 source = ["app", "indexing"]
 omit = [
     "*/tests/*",
-    "indexing/index_documents.py",  # GPU-only, tested on Colab
 ]
 
 [tool.coverage.report]

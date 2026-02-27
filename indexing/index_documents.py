@@ -30,6 +30,8 @@ from PIL import Image
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Distance,
+    MultiVectorComparator,
+    MultiVectorConfig,
     PointStruct,
     VectorParams,
 )
@@ -173,9 +175,9 @@ class QdrantStorage:
                     "colqwen2": VectorParams(
                         size=embedding_dim,
                         distance=Distance.COSINE,
-                        multivector_config={
-                            "comparator": "max_sim",
-                        },
+                        multivector_config=MultiVectorConfig(
+                            comparator=MultiVectorComparator.MAX_SIM,
+                        ),
                     )
                 },
             )
@@ -298,6 +300,8 @@ def index_document(
     storage: QdrantStorage,
     tracker: IndexTracker,
     config: AppConfig,
+    force: bool = False,
+    dry_run: bool = False,
 ) -> dict:
     """
     Index a single PDF document.
@@ -309,7 +313,7 @@ def index_document(
 
     # Step 1: Idempotency check
     doc_hash = compute_document_hash(pdf_path)
-    if tracker.is_indexed(doc_hash):
+    if tracker.is_indexed(doc_hash) and not force:
         logger.info("already_indexed", filename=filename, hash=doc_hash[:12])
         return {"filename": filename, "status": "skipped", "reason": "already_indexed"}
 
@@ -338,7 +342,17 @@ def index_document(
         per_page_s=round(encode_time / num_pages, 2),
     )
 
-    # Step 5: Store in Qdrant
+    # Step 5: Store in Qdrant (skip in dry-run mode)
+    if dry_run:
+        logger.info("dry_run_skip_qdrant", filename=filename, num_pages=num_pages)
+        return {
+            "filename": filename,
+            "status": "dry_run",
+            "document_id": doc_id,
+            "num_pages": num_pages,
+            "encode_time_s": round(encode_time, 1),
+        }
+
     logger.info("storing_qdrant", filename=filename)
     first_point_id = storage.get_next_id()
 
@@ -386,6 +400,8 @@ def index_directory(
     storage: QdrantStorage,
     tracker: IndexTracker,
     config: AppConfig,
+    force: bool = False,
+    dry_run: bool = False,
 ) -> list[dict]:
     """Index all PDFs in a directory."""
     pdf_files = list(iter_pdf_files(directory))
@@ -398,7 +414,7 @@ def index_directory(
 
     results = []
     for pdf_path in pdf_files:
-        result = index_document(pdf_path, encoder, storage, tracker, config)
+        result = index_document(pdf_path, encoder, storage, tracker, config, force=force, dry_run=dry_run)
         results.append(result)
 
     return results
@@ -415,6 +431,7 @@ def main():
     parser.add_argument("--pdf", type=str, default=None, help="Path to a single PDF to index")
     parser.add_argument("--dir", type=str, default=None, help="Path to directory of PDFs to index")
     parser.add_argument("--force", action="store_true", help="Force re-indexing even if document already exists")
+    parser.add_argument("--dry-run", action="store_true", help="Run pipeline without writing to Qdrant or tracker")
     args = parser.parse_args()
 
     # Load config
@@ -430,32 +447,41 @@ def main():
     storage = QdrantStorage(config)
     storage.ensure_collection(embedding_dim=encoder.embedding_dim)
 
-    tracker = IndexTracker()
+    tracker_path = str(Path(config.data.documents_dir).parent / "index_tracker.json")
+    tracker = IndexTracker(tracker_path=tracker_path)
 
     # Index
     t_total = time.time()
 
     if args.pdf:
-        results = [index_document(Path(args.pdf), encoder, storage, tracker, config)]
+        results = [
+            index_document(Path(args.pdf), encoder, storage, tracker, config, force=args.force, dry_run=args.dry_run)
+        ]
     elif args.dir:
-        results = index_directory(Path(args.dir), encoder, storage, tracker, config)
+        results = index_directory(
+            Path(args.dir), encoder, storage, tracker, config, force=args.force, dry_run=args.dry_run
+        )
     else:
         # Default: index from config documents_dir
-        results = index_directory(Path(config.data.documents_dir), encoder, storage, tracker, config)
+        results = index_directory(
+            Path(config.data.documents_dir), encoder, storage, tracker, config, force=args.force, dry_run=args.dry_run
+        )
 
     # Summary
     total_time = time.time() - t_total
     indexed = [r for r in results if r["status"] == "indexed"]
     skipped = [r for r in results if r["status"] == "skipped"]
-    total_pages = sum(r.get("num_pages", 0) for r in indexed)
+    dry_runs = [r for r in results if r["status"] == "dry_run"]
+    total_pages = sum(r.get("num_pages", 0) for r in indexed + dry_runs)
 
     logger.info(
         "indexing_complete",
         documents_indexed=len(indexed),
         documents_skipped=len(skipped),
+        documents_dry_run=len(dry_runs),
         total_pages=total_pages,
         total_time_s=round(total_time, 1),
-        qdrant_total_pages=storage.count_pages(),
+        qdrant_total_pages=storage.count_pages() if not args.dry_run else 0,
     )
 
 
