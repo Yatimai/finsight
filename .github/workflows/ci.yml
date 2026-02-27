@@ -36,6 +36,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install pydantic pyyaml anthropic fastapi structlog uvicorn \
                       pytest pytest-asyncio pytest-cov httpx Pillow
       - run: pytest --cov=app --cov-report=term-missing -m "not slow and not gpu and not integration"
