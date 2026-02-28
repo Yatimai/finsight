@@ -91,10 +91,10 @@ class ColQwen2Encoder:
         """Load model and processor. Call once before encoding."""
         # Try ColQwen2.5 first, fall back to ColQwen2 for older model names
         try:
-            from colpali_engine.models import ColQwen2_5, ColQwen2_5Processor
+            from colpali_engine.models import ColQwen2_5, ColQwen2_5_Processor
 
             model_cls = ColQwen2_5
-            processor_cls = ColQwen2_5Processor
+            processor_cls = ColQwen2_5_Processor
         except ImportError:
             from colpali_engine.models import ColQwen2, ColQwen2Processor
 

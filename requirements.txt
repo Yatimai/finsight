@@ -8,7 +8,7 @@ Pillow>=10.0
 pdf2image>=1.17.0  # fallback if pymupdf unavailable
 
 # Embeddings
-colpali-engine>=0.4.0
+colpali-engine>=0.3.14
 torch>=2.0
 fast-plaid  # optional: accelerates ColQwen2 search
 
