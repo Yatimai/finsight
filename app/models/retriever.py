@@ -1,17 +1,34 @@
 """
-Retriever: ColQwen2 text encoding → Qdrant MaxSim search → RRF fusion.
+Retriever: ColQwen2.5 text encoding → Qdrant two-stage MaxSim search → RRF fusion.
 
 Handles single-query retrieval and multi-query RAG Fusion with
 Reciprocal Rank Fusion for merging ranked results.
+
+Two-stage search:
+  Stage 1 (prefetch): Fast search using tile-level mean-pooled vectors
+  Stage 2 (rerank): Exact MaxSim on full visual patch vectors
 """
 
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
 import torch
 from PIL import Image
 from qdrant_client import QdrantClient
+from qdrant_client.models import Prefetch, SearchParams
 
 from app.config import AppConfig
+from app.logging import get_logger
+
+logger = get_logger("retriever")
+
+
+@dataclass
+class QueryEmbedding:
+    """Encoded query with filtered and pooled variants for two-stage search."""
+
+    filtered: torch.Tensor  # Padding-filtered multi-vector [N_real_tokens, 128]
+    pooled: torch.Tensor  # Mean of real tokens [128] — for prefetch stage 1
 
 
 @dataclass
@@ -36,8 +53,12 @@ class RetrievedPage:
 
 class Retriever:
     """
-    Retrieves relevant pages using ColQwen2 + Qdrant MaxSim.
+    Retrieves relevant pages using ColQwen2.5 + Qdrant two-stage MaxSim.
     Supports single-query and multi-query (RAG Fusion) modes.
+
+    If the collection has the new 3-vector format (colqwen2 + pooled + global),
+    uses two-stage prefetch for better performance. Falls back to single-stage
+    search for old mono-vector collections (backward compatible).
     """
 
     def __init__(self, config: AppConfig, encoder=None, qdrant_client: QdrantClient | None = None):
@@ -62,63 +83,99 @@ class Retriever:
         else:
             self.client = QdrantClient(url=config.qdrant.remote_url)
 
+        # Detect collection capabilities (lazy)
+        self._has_pooled_vector: bool | None = None
+
     @property
     def encoder(self):
         """Lazy-load the encoder on first use."""
         if self._encoder is None:
             from indexing.index_documents import ColQwen2Encoder
 
-            self._encoder = ColQwen2Encoder(model_name=self.config.retrieval.model)
+            self._encoder = ColQwen2Encoder(
+                model_name=self.config.retrieval.model,
+                mask_non_image_embeddings=self.config.retrieval.mask_non_image_embeddings,
+                border_crop=self.config.retrieval.border_crop,
+            )
             self._encoder.load()
         return self._encoder
 
-    def encode_query(self, query: str) -> torch.Tensor:
-        """Encode a text query into multi-vector embedding."""
-        return self.encoder.encode_query(query)
+    @property
+    def has_pooled_vector(self) -> bool:
+        """Check if collection supports two-stage search (has 'pooled' named vector)."""
+        if self._has_pooled_vector is None:
+            try:
+                collection_info = self.client.get_collection(self.collection_name)
+                vectors_config = collection_info.config.params.vectors
+                self._has_pooled_vector = isinstance(vectors_config, dict) and "pooled" in vectors_config
+            except Exception:
+                self._has_pooled_vector = False
+            logger.info("collection_capability", has_pooled=self._has_pooled_vector)
+        return self._has_pooled_vector
+
+    def encode_query(self, query: str) -> QueryEmbedding:
+        """Encode a text query with padding hygiene.
+
+        Returns a QueryEmbedding with:
+        - filtered: padding tokens removed (for exact MaxSim search)
+        - pooled: mean of real tokens (for prefetch stage 1)
+        """
+        filtered = self.encoder.encode_query(query)
+        pooled = filtered.mean(dim=0)
+        return QueryEmbedding(filtered=filtered, pooled=pooled)
 
     def search_single(
         self,
-        query_embedding: torch.Tensor,
+        query_embedding: QueryEmbedding,
         top_k: int | None = None,
     ) -> list[RetrievedPage]:
         """
         Search Qdrant with a single query embedding.
 
-        Args:
-            query_embedding: Multi-vector query tensor (num_tokens, dim)
-            top_k: Number of results to return (default from config)
+        Uses two-stage search if the collection supports it:
+        - Stage 1: Prefetch top prefetch_k candidates using pooled vectors
+        - Stage 2: Exact MaxSim rerank on full patch vectors
 
-        Returns:
-            List of RetrievedPage sorted by score descending
+        Falls back to single-stage search for old collections.
         """
         top_k = top_k or self.config.retrieval.top_k
 
-        results = self.client.query_points(
-            collection_name=self.collection_name,
-            query=query_embedding.tolist(),
-            using="colqwen2",
-            limit=top_k,
-        )
+        if self.has_pooled_vector:
+            prefetch_k = self.config.retrieval.prefetch_k
+            results = self.client.query_points(
+                collection_name=self.collection_name,
+                query=query_embedding.filtered.tolist(),
+                using="colqwen2",
+                limit=top_k,
+                prefetch=[
+                    Prefetch(
+                        query=query_embedding.filtered.tolist(),
+                        using="pooled",
+                        limit=prefetch_k,
+                    )
+                ],
+                search_params=SearchParams(exact=True),
+            )
+        else:
+            # Fallback: single-stage search for old collections
+            results = self.client.query_points(
+                collection_name=self.collection_name,
+                query=query_embedding.filtered.tolist(),
+                using="colqwen2",
+                limit=top_k,
+            )
 
         return [self._to_retrieved_page(r) for r in results.points]
 
     def search_multi(
         self,
-        query_embeddings: list[torch.Tensor],
+        query_embeddings: list[QueryEmbedding],
         top_k: int | None = None,
         rrf_k: int | None = None,
     ) -> list[RetrievedPage]:
         """
         Search Qdrant with multiple query embeddings (RAG Fusion).
         Performs N searches and fuses results with RRF.
-
-        Args:
-            query_embeddings: List of multi-vector query tensors
-            top_k: Final number of results after fusion
-            rrf_k: RRF constant (default 60)
-
-        Returns:
-            List of RetrievedPage sorted by RRF score descending
         """
         top_k = top_k or self.config.retrieval.top_k
         rrf_k = rrf_k or self.config.rewriting.rrf_k
@@ -126,18 +183,36 @@ class Retriever:
         if len(query_embeddings) == 1:
             return self.search_single(query_embeddings[0], top_k=top_k)
 
-        # Perform N searches
+        # Perform N searches in parallel
         max_candidates = self.config.retrieval.max_candidates
-        ranked_lists = []
 
-        for qe in query_embeddings:
-            results = self.client.query_points(
-                collection_name=self.collection_name,
-                query=qe.tolist(),
-                using="colqwen2",
-                limit=max_candidates,
-            )
-            ranked_lists.append(results.points)
+        def _search_one(qe: QueryEmbedding):
+            if self.has_pooled_vector:
+                prefetch_k = self.config.retrieval.prefetch_k
+                return self.client.query_points(
+                    collection_name=self.collection_name,
+                    query=qe.filtered.tolist(),
+                    using="colqwen2",
+                    limit=max_candidates,
+                    prefetch=[
+                        Prefetch(
+                            query=qe.filtered.tolist(),
+                            using="pooled",
+                            limit=prefetch_k,
+                        )
+                    ],
+                    search_params=SearchParams(exact=True),
+                ).points
+            else:
+                return self.client.query_points(
+                    collection_name=self.collection_name,
+                    query=qe.filtered.tolist(),
+                    using="colqwen2",
+                    limit=max_candidates,
+                ).points
+
+        with ThreadPoolExecutor(max_workers=len(query_embeddings)) as pool:
+            ranked_lists = list(pool.map(_search_one, query_embeddings))
 
         # RRF fusion
         fused = self._rrf_fusion(ranked_lists, rrf_k=rrf_k)
@@ -157,15 +232,15 @@ class Retriever:
         self,
         queries: list[str],
         top_k: int | None = None,
-        precomputed_embeddings: dict[str, "torch.Tensor"] | None = None,
-    ) -> tuple[list[RetrievedPage], list["torch.Tensor"]]:
+        precomputed_embeddings: dict[str, QueryEmbedding] | None = None,
+    ) -> tuple[list[RetrievedPage], list[QueryEmbedding]]:
         """
         Full retrieval pipeline: encode queries → search → (optional RRF) → return.
 
         Args:
             queries: List of query strings (1 for simple, 3 for RAG Fusion)
             top_k: Number of pages to return
-            precomputed_embeddings: Optional dict of {query_string: embedding}
+            precomputed_embeddings: Optional dict of {query_string: QueryEmbedding}
                                    to avoid re-encoding already-encoded queries
 
         Returns:
@@ -198,20 +273,13 @@ class Retriever:
         Reciprocal Rank Fusion.
 
         RRF_score(doc) = Σ  1 / (k + rank_in_list_i)
-
-        Args:
-            ranked_lists: List of Qdrant search results (each is a ranked list)
-            rrf_k: RRF constant (standard = 60)
-
-        Returns:
-            Dict mapping point_id to {"rrf_score": float, "point": ScoredPoint}
         """
-        scores = {}  # point_id -> {"rrf_score": float, "point": ScoredPoint}
+        scores = {}
 
         for ranked_list in ranked_lists:
             for rank, point in enumerate(ranked_list):
                 pid = point.id
-                rrf_score = 1.0 / (rrf_k + rank + 1)  # rank is 0-indexed
+                rrf_score = 1.0 / (rrf_k + rank + 1)
 
                 if pid not in scores:
                     scores[pid] = {"rrf_score": 0.0, "point": point}

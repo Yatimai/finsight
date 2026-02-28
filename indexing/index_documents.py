@@ -1,9 +1,10 @@
 """
-Indexing pipeline: PDF → Page Images → ColQwen2 Vision Encoder → Qdrant
+Indexing pipeline: PDF → Page Images → ColQwen2.5 Vision Encoder → Qdrant
 
 This script is designed to run on Google Colab (free GPU) or any machine
 with a CUDA GPU. It processes PDFs into page images, encodes them with
-ColQwen2's vision encoder, and stores multi-vector embeddings in Qdrant.
+ColQwen2.5's vision encoder (with non-image token masking), and stores
+multi-vector embeddings in Qdrant with three named vectors for two-stage search.
 
 Usage:
     python -m indexing.index_documents --config config.yaml
@@ -25,6 +26,7 @@ from app.logging import get_logger, setup_logging
 
 logger = get_logger("indexing")
 
+import numpy as np
 import torch
 from PIL import Image
 from qdrant_client import QdrantClient
@@ -37,6 +39,7 @@ from qdrant_client.models import (
 )
 
 from app.config import AppConfig, load_config
+from indexing.preprocessing import CropConfig, crop_empty
 from indexing.utils import (
     compute_document_hash,
     iter_pdf_files,
@@ -50,14 +53,32 @@ from indexing.utils import (
 
 
 class ColQwen2Encoder:
-    """Wraps ColQwen2 for encoding document page images and text queries."""
+    """Wraps ColQwen2.5 for encoding document page images and text queries.
 
-    def __init__(self, model_name: str = "vidore/colqwen2-v1.0"):
+    Supports:
+    - mask_non_image_embeddings: filters out non-visual tokens (prompt, special tokens)
+    - Padding removal via unbind_padded_multivector_embeddings
+    - Pooled vector computation (tile-level mean + global mean) for two-stage search
+    - Border cropping before encoding
+    """
+
+    # Token ID for <|endoftext|> padding in Qwen2 tokenizer
+    PADDING_TOKEN_ID = 151643
+
+    def __init__(
+        self,
+        model_name: str = "vidore/colqwen2.5-v0.2",
+        mask_non_image_embeddings: bool = True,
+        border_crop: bool = True,
+    ):
         self.model_name = model_name
+        self.mask_non_image_embeddings = mask_non_image_embeddings
+        self.border_crop = border_crop
         self.device = self._select_device()
         self.dtype = torch.bfloat16 if self.device.type == "cuda" and torch.cuda.is_bf16_supported() else torch.float32
         self.model = None
         self.processor = None
+        self._crop_config = CropConfig()
 
     def _select_device(self) -> torch.device:
         if torch.cuda.is_available():
@@ -68,7 +89,18 @@ class ColQwen2Encoder:
 
     def load(self):
         """Load model and processor. Call once before encoding."""
-        from colpali_engine.models import ColQwen2, ColQwen2Processor
+        # Try ColQwen2.5 first, fall back to ColQwen2 for older model names
+        try:
+            from colpali_engine.models import ColQwen2_5, ColQwen2_5Processor
+
+            model_cls = ColQwen2_5
+            processor_cls = ColQwen2_5Processor
+        except ImportError:
+            from colpali_engine.models import ColQwen2, ColQwen2Processor
+
+            model_cls = ColQwen2
+            processor_cls = ColQwen2Processor
+            logger.warning("colqwen2_5_not_available", fallback="ColQwen2")
 
         logger.info("loading_model", model=self.model_name, device=str(self.device), dtype=str(self.dtype))
 
@@ -82,25 +114,43 @@ class ColQwen2Encoder:
             except ImportError:
                 pass
 
-        self.model = ColQwen2.from_pretrained(
+        self.model = model_cls.from_pretrained(
             self.model_name,
             torch_dtype=self.dtype,
             device_map=str(self.device),
             attn_implementation=attn_impl,
         ).eval()
 
-        self.processor = ColQwen2Processor.from_pretrained(self.model_name)
+        self.processor = processor_cls.from_pretrained(self.model_name)
         logger.info("model_loaded", flash_attention=attn_impl or "disabled")
+
+    def _apply_border_crop(self, images: list[Image.Image]) -> list[Image.Image]:
+        """Apply border cropping to remove white margins."""
+        if not self.border_crop:
+            return images
+
+        cropped = []
+        for img in images:
+            cropped_img, meta = crop_empty(img, self._crop_config)
+            if meta["applied"]:
+                logger.debug("border_crop_applied", original=meta["original_size"], cropped=meta["cropped_size"])
+            cropped.append(cropped_img)
+        return cropped
 
     def encode_images(self, images: list[Image.Image], batch_size: int = 8) -> list[torch.Tensor]:
         """
-        Encode page images into multi-vector embeddings.
+        Encode page images into multi-vector embeddings (visual tokens only).
 
-        Returns a list of tensors, each of shape (num_patches, embedding_dim).
-        For ColQwen2, this is typically (768, 128) per page.
+        With mask_non_image_embeddings=True (default), returns only visual patch
+        embeddings, filtering out prompt/special tokens that act as parasitic attractors.
+
+        Returns a list of tensors, each of shape (num_visual_patches, 128).
         """
         if self.model is None:
             raise RuntimeError("Model not loaded. Call .load() first.")
+
+        # Apply border cropping before encoding
+        images = self._apply_border_crop(images)
 
         all_embeddings = []
 
@@ -111,10 +161,17 @@ class ColQwen2Encoder:
             with torch.no_grad():
                 batch_embeddings = self.model(**batch_inputs)
 
-            # Move to CPU and store individually
-            for j in range(len(batch)):
-                embedding = batch_embeddings[j].cpu().float()
-                all_embeddings.append(embedding)
+            # Remove padding tokens per image
+            try:
+                from colpali_engine.utils.processing_utils import unbind_padded_multivector_embeddings
+
+                unpadded = unbind_padded_multivector_embeddings(batch_embeddings)
+            except ImportError:
+                # Fallback: keep full embeddings
+                unpadded = [batch_embeddings[j] for j in range(len(batch))]
+
+            for embedding in unpadded:
+                all_embeddings.append(embedding.cpu().float())
 
             # Free GPU memory
             del batch_inputs, batch_embeddings
@@ -126,7 +183,7 @@ class ColQwen2Encoder:
     def encode_query(self, query: str) -> torch.Tensor:
         """
         Encode a text query into multi-vector embedding.
-        Returns tensor of shape (num_tokens, embedding_dim).
+        Returns tensor of shape (num_real_tokens, embedding_dim) with padding filtered.
         """
         if self.model is None:
             raise RuntimeError("Model not loaded. Call .load() first.")
@@ -136,7 +193,54 @@ class ColQwen2Encoder:
         with torch.no_grad():
             query_embedding = self.model(**batch_queries)
 
-        return query_embedding[0].cpu().float()
+        embedding = query_embedding[0].cpu().float()
+
+        # Filter padding tokens
+        input_ids = batch_queries.get("input_ids")
+        if input_ids is not None:
+            ids = input_ids[0].cpu()
+            mask = ids != self.PADDING_TOKEN_ID
+            num_filtered = int((~mask).sum())
+            if num_filtered > 0:
+                logger.debug("query_padding_filtered", tokens_removed=num_filtered)
+            embedding = embedding[mask]
+
+        return embedding
+
+    @staticmethod
+    def compute_pooled(embedding: torch.Tensor, patches_per_tile: int = 64) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        Compute pooled vectors from visual patch embeddings.
+
+        Args:
+            embedding: Visual patch embeddings [N_visual, 128]
+            patches_per_tile: Number of patches per tile (64 for ColQwen2.5)
+
+        Returns:
+            Tuple of:
+            - tile_pooled: Mean pooling per tile [N_tiles, 128]
+            - global_mean: Global mean vector [128]
+        """
+        emb_np = embedding.numpy() if isinstance(embedding, torch.Tensor) else np.array(embedding)
+        num_tokens = emb_np.shape[0]
+
+        # Tile-level mean pooling
+        num_tiles = num_tokens // patches_per_tile
+        remainder = num_tokens % patches_per_tile
+        if remainder > 0:
+            num_tiles += 1
+
+        tile_embeddings = []
+        for tile_idx in range(num_tiles):
+            start = tile_idx * patches_per_tile
+            end = min(start + patches_per_tile, num_tokens)
+            tile_mean = emb_np[start:end].mean(axis=0)
+            tile_embeddings.append(tile_mean)
+
+        tile_pooled = np.array(tile_embeddings, dtype=np.float32)
+        global_mean = emb_np.mean(axis=0).astype(np.float32)
+
+        return torch.from_numpy(tile_pooled), torch.from_numpy(global_mean)
 
     @property
     def embedding_dim(self) -> int:
@@ -162,13 +266,16 @@ class QdrantStorage:
             self.client = QdrantClient(url=config.qdrant.remote_url)
 
     def ensure_collection(self, embedding_dim: int = 128):
-        """Create collection if it doesn't exist."""
+        """Create collection with 3 named vectors for two-stage search.
+
+        Named vectors:
+        - "colqwen2": Full multi-vector MaxSim (visual patches only, on_disk for large index)
+        - "pooled": Tile-level mean pooling multi-vector MaxSim (for fast prefetch stage 1)
+        - "global": Single-vector cosine (for coarse recall, cheapest search)
+        """
         collections = [c.name for c in self.client.get_collections().collections]
 
         if self.collection_name not in collections:
-            # For multi-vector with MaxSim, we use named vectors
-            # Each page gets a variable number of patch vectors
-            # Qdrant handles this via multivector mode
             self.client.create_collection(
                 collection_name=self.collection_name,
                 vectors_config={
@@ -178,10 +285,22 @@ class QdrantStorage:
                         multivector_config=MultiVectorConfig(
                             comparator=MultiVectorComparator.MAX_SIM,
                         ),
-                    )
+                        on_disk=True,
+                    ),
+                    "pooled": VectorParams(
+                        size=embedding_dim,
+                        distance=Distance.COSINE,
+                        multivector_config=MultiVectorConfig(
+                            comparator=MultiVectorComparator.MAX_SIM,
+                        ),
+                    ),
+                    "global": VectorParams(
+                        size=embedding_dim,
+                        distance=Distance.COSINE,
+                    ),
                 },
             )
-            logger.info("collection_created", name=self.collection_name)
+            logger.info("collection_created", name=self.collection_name, vectors=["colqwen2", "pooled", "global"])
         else:
             logger.info("collection_exists", name=self.collection_name)
 
@@ -216,18 +335,29 @@ class QdrantStorage:
         self,
         point_id: int,
         embedding: torch.Tensor,
+        tile_pooled: torch.Tensor,
+        global_mean: torch.Tensor,
         metadata: dict,
     ):
-        """Store a single page embedding with metadata."""
-        # Convert embedding tensor to list of lists for Qdrant
-        vectors = embedding.tolist()  # shape: (num_patches, dim) → list[list[float]]
+        """Store a page with 3 named vectors for two-stage search.
 
+        Args:
+            point_id: Unique point ID
+            embedding: Full visual patch embeddings [N_visual, 128]
+            tile_pooled: Tile-level mean pooled [N_tiles, 128]
+            global_mean: Global mean vector [128]
+            metadata: Page metadata
+        """
         self.client.upsert(
             collection_name=self.collection_name,
             points=[
                 PointStruct(
                     id=point_id,
-                    vector={"colqwen2": vectors},
+                    vector={
+                        "colqwen2": embedding.tolist(),
+                        "pooled": tile_pooled.tolist(),
+                        "global": global_mean.tolist(),
+                    },
                     payload=metadata,
                 )
             ],
@@ -360,6 +490,9 @@ def index_document(
         page_number = i + 1
         point_id = first_point_id + i
 
+        # Compute pooled vectors for two-stage search
+        tile_pooled, global_mean = ColQwen2Encoder.compute_pooled(embedding)
+
         metadata = {
             "document_id": doc_id,
             "document_hash": doc_hash,
@@ -369,9 +502,10 @@ def index_document(
             "image_path": str(image_path),
             "indexed_at": datetime.now(UTC).isoformat(),
             "num_patches": embedding.shape[0],
+            "num_tiles": tile_pooled.shape[0],
         }
 
-        storage.store_page(point_id, embedding, metadata)
+        storage.store_page(point_id, embedding, tile_pooled, global_mean, metadata)
 
     # Step 6: Mark as indexed
     tracker.mark_indexed(doc_hash, filename, num_pages, first_point_id)
@@ -440,7 +574,11 @@ def main():
 
     # Initialize components
     logger.info("initializing_encoder")
-    encoder = ColQwen2Encoder(model_name=config.retrieval.model)
+    encoder = ColQwen2Encoder(
+        model_name=config.retrieval.model,
+        mask_non_image_embeddings=config.retrieval.mask_non_image_embeddings,
+        border_crop=config.retrieval.border_crop,
+    )
     encoder.load()
 
     logger.info("initializing_qdrant")

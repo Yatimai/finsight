@@ -9,7 +9,7 @@ from app.config import AppConfig, CachingConfig, load_config, reset_config
 class TestAppConfig:
     def test_default_config(self):
         config = AppConfig()
-        assert config.retrieval.model == "vidore/colqwen2-v1.0"
+        assert config.retrieval.model == "vidore/colqwen2.5-v0.2"
         assert config.retrieval.top_k == 5
         assert config.generation.model == "claude-sonnet-4-5-20250929"
         assert config.verification.model == "claude-opus-4-6"
@@ -27,7 +27,7 @@ class TestAppConfig:
         reset_config()
         config = load_config("/nonexistent/path/config.yaml")
         assert isinstance(config, AppConfig)
-        assert config.retrieval.model == "vidore/colqwen2-v1.0"
+        assert config.retrieval.model == "vidore/colqwen2.5-v0.2"
 
     def test_env_var_override(self):
         reset_config()

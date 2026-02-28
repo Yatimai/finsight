@@ -11,9 +11,12 @@ from pydantic import BaseModel, Field
 
 
 class RetrievalConfig(BaseModel):
-    model: str = "vidore/colqwen2-v1.0"
+    model: str = "vidore/colqwen2.5-v0.2"
     top_k: int = 5
     max_candidates: int = 20
+    mask_non_image_embeddings: bool = True
+    prefetch_k: int = 100
+    border_crop: bool = True
 
 
 class RewritingConfig(BaseModel):

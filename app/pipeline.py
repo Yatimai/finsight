@@ -174,7 +174,7 @@ class Pipeline:
             # Encode query once — reused for cache lookup AND retrieval
             query_embedding = self.retriever.encode_query(question)
 
-            cached = self.cache.lookup(question, query_embedding)
+            cached = self.cache.lookup(question, query_embedding.filtered)
             if cached is not None:
                 result.cache_hit = True
                 result.answer = cached["answer"]
@@ -228,7 +228,7 @@ class Pipeline:
                     await self._verify_batch_async(result.query_id, question, result.answer, result.pages)
 
             # Step 6: Cache the response
-            self.cache.store(question, query_embedding, result.to_api_response())
+            self.cache.store(question, query_embedding.filtered, result.to_api_response())
 
         except ServiceUnavailableError as e:
             result.error = str(e)
