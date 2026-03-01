@@ -37,6 +37,13 @@ Pour chaque fait, donne un verdict :
 
 Puis donne un score de confiance global de 0.0 à 1.0.
 
+FORMATS NUMÉRIQUES :
+- Les documents peuvent utiliser différentes conventions (US, FR, UK)
+- US : virgule = séparateur milliers, point = décimale (ex: $648,125.00 = six-cent-quarante-huit-mille-cent-vingt-cinq dollars)
+- FR : espace/point = séparateur milliers, virgule = décimale (ex: 648 125,00 €)
+- Quand tu compares des chiffres, normalise-les AVANT de conclure CONFIRMÉ ou CONTREDIT
+- Ne marque CONTREDIT que si les valeurs sont réellement différentes après normalisation
+
 Réponds UNIQUEMENT avec un JSON structuré comme suit :
 {
   "claims": [
