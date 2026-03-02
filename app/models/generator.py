@@ -9,7 +9,7 @@ import re
 import anthropic
 
 from app.config import AppConfig
-from app.errors import call_anthropic_with_retry
+from app.errors import call_anthropic_with_retry, extract_text_from_response
 from app.models.retriever import RetrievedPage
 from indexing.utils import encode_image_base64
 
@@ -97,7 +97,7 @@ class Generator:
             component="generator",
         )
 
-        answer = response.content[0].text
+        answer = extract_text_from_response(response)
         citations = self._extract_citations(answer)
 
         return {

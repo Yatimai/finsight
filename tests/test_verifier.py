@@ -6,7 +6,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.config import AppConfig
 from app.models.verifier import VERIFICATION_SYSTEM_PROMPT, Verifier
 
 
@@ -21,11 +20,6 @@ class FakePage:
     total_pages: int = 50
     image_path: str = "/tmp/fake_page.png"
     score: float = 0.95
-
-
-@pytest.fixture
-def config():
-    return AppConfig()
 
 
 @pytest.fixture
@@ -227,6 +221,19 @@ class TestVerify:
             v = Verifier(config, client=AsyncMock())
             result = await v.verify("Q?", "A.", [])
         assert result["status"] == "disabled"
+
+    async def test_verify_empty_content_returns_error(self, verifier):
+        """Bug 3 regression: empty response.content must not raise IndexError."""
+        # Mock response with empty content list
+        mock_response = MagicMock()
+        mock_response.content = []
+        mock_response.usage = MagicMock()
+
+        with patch("app.models.verifier.call_anthropic_with_retry", return_value=mock_response):
+            result = await verifier.verify("Q?", "A.", [FakePage()])
+
+        assert result["status"] == "error"
+        assert result["confidence"] is None
 
 
 # ── submit_batch (batch_async) ───────────────────────────────────

@@ -9,7 +9,7 @@ import json
 import anthropic
 
 from app.config import AppConfig
-from app.errors import call_anthropic_with_retry
+from app.errors import call_anthropic_with_retry, extract_text_from_response
 from app.logging import get_logger
 from app.models.retriever import RetrievedPage
 from indexing.utils import encode_image_base64
@@ -114,12 +114,13 @@ class Verifier:
                 backoff_base=self.config.error_handling.backoff_base,
                 component="verifier",
             )
+            text = extract_text_from_response(response)
         except Exception as e:
             # Verification failure is non-blocking
             return self._error_result(str(e))
 
         # Parse the structured response
-        result = self._parse_verification(response.content[0].text)
+        result = self._parse_verification(text)
         result["input_tokens"] = response.usage.input_tokens
         result["output_tokens"] = response.usage.output_tokens
         result["cache_read_tokens"] = getattr(response.usage, "cache_read_input_tokens", 0)
@@ -208,6 +209,8 @@ class Verifier:
                     for entry in result_stream:
                         if entry.custom_id == query_id:
                             if entry.result.type == "succeeded":
+                                if not entry.result.message.content:
+                                    return self._error_result("Empty content in batch response")
                                 text = entry.result.message.content[0].text
                                 result = self._parse_verification(text)
                                 result["input_tokens"] = entry.result.message.usage.input_tokens

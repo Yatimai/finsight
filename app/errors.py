@@ -31,6 +31,23 @@ class RewritingFallbackError(Exception):
     pass
 
 
+class EmptyResponseError(Exception):
+    """Raised when Anthropic returns an empty content list."""
+
+    pass
+
+
+def extract_text_from_response(response) -> str:
+    """Safely extract text from an Anthropic API response.
+
+    Raises:
+        EmptyResponseError: If response.content is empty.
+    """
+    if not response.content:
+        raise EmptyResponseError("Empty content list from Anthropic API")
+    return response.content[0].text
+
+
 async def call_anthropic_with_retry(
     func: Callable,
     *args,

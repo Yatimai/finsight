@@ -13,6 +13,7 @@ from app.errors import (
     RewritingFallbackError,
     ServiceUnavailableError,
     call_anthropic_with_retry,
+    extract_text_from_response,
 )
 
 REWRITE_SYSTEM_PROMPT = """Tu es un spécialiste en reformulation de requêtes pour un système de recherche documentaire financier.
@@ -125,7 +126,7 @@ class QueryRewriter:
         )
 
         # Parse JSON response
-        text = response.content[0].text.strip()
+        text = extract_text_from_response(response).strip()
 
         # Handle potential markdown code fences
         if text.startswith("```"):
