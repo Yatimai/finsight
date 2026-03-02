@@ -20,7 +20,7 @@ ignore = [
 "indexing/index_documents.py" = ["E402"]  # sys.path manipulation before imports
 
 [tool.ruff.lint.isort]
-known-first-party = ["app", "indexing"]
+known-first-party = ["app", "indexing", "evaluation"]
 
 [tool.mypy]
 python_version = "3.11"
