@@ -10,9 +10,12 @@ Endpoints:
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from app.config import get_config
 from app.logging import get_logger, setup_logging
@@ -108,8 +111,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Rate limiting
+_config = get_config()
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 # CORS for frontend — restricted to configured origins
-_cors_origins = get_config().security.allowed_origins
+_cors_origins = _config.security.allowed_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
@@ -125,7 +134,8 @@ app.add_middleware(
 
 
 @app.post("/api/v1/query", response_model=QueryResponse)
-async def query(request: QueryRequest):
+@limiter.limit(lambda: _config.security.rate_limit)
+async def query(request: Request, body: QueryRequest):
     """
     Ask a question about the indexed financial documents.
     Returns an answer with citations, sources, and confidence score.
@@ -133,9 +143,9 @@ async def query(request: QueryRequest):
     pipeline: Pipeline = app.state.pipeline
 
     result: QueryResult = await pipeline.query(
-        question=request.question,
-        conversation_history=request.conversation_history,
-        skip_verification=request.skip_verification,
+        question=body.question,
+        conversation_history=body.conversation_history,
+        skip_verification=body.skip_verification,
     )
 
     # Store verification for async retrieval

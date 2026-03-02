@@ -57,3 +57,9 @@ class TestAppConfig:
         config = AppConfig()
         origins = config.security.allowed_origins
         assert any("localhost" in o for o in origins)
+
+    def test_rate_limit_config_exists(self):
+        """Bug 5 regression: SecurityConfig must have a rate_limit field."""
+        config = AppConfig()
+        assert hasattr(config.security, "rate_limit")
+        assert config.security.rate_limit == "10/minute"
