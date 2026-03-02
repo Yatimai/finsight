@@ -2,6 +2,14 @@
 
 import pytest
 
+from evaluation.metrics import (
+    build_report,
+    compute_abstention_metrics,
+    compute_category_breakdown,
+    compute_citation_accuracy,
+    compute_cost_per_query,
+    compute_recall_at_k,
+)
 from evaluation.models import (
     EvaluationReport,
     EvaluationResult,
@@ -151,3 +159,182 @@ class TestEvaluationReport:
         assert report.total_questions == 0
         assert report.results == []
         assert report.by_category == {}
+
+
+# ── Metrics ─────────────────────────────────────────────────────────
+
+
+def _make_result(
+    qid: str,
+    recall_1: bool = False,
+    recall_3: bool = False,
+    recall_5: bool = False,
+    citation_correct: bool = False,
+    should_abstain: bool = False,
+    did_abstain: bool = False,
+    input_tokens: int = 1000,
+    output_tokens: int = 200,
+) -> EvaluationResult:
+    """Helper to create EvaluationResult with common defaults."""
+    return EvaluationResult(
+        question_id=qid,
+        retrieved_pages=[5, 12, 23],
+        recall_at_k={1: recall_1, 3: recall_3, 5: recall_5},
+        generated_answer="Answer",
+        citation_correct=citation_correct,
+        should_abstain=should_abstain,
+        did_abstain=did_abstain,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+    )
+
+
+class TestRecallAtK:
+    def test_recall_at_1_perfect(self):
+        results = [
+            _make_result("q01", recall_1=True),
+            _make_result("q02", recall_1=True),
+        ]
+        assert compute_recall_at_k(results, 1) == 1.0
+
+    def test_recall_at_1_miss(self):
+        results = [
+            _make_result("q01", recall_1=False),
+            _make_result("q02", recall_1=False),
+        ]
+        assert compute_recall_at_k(results, 1) == 0.0
+
+    def test_recall_at_5_partial(self):
+        results = [
+            _make_result("q01", recall_5=True),
+            _make_result("q02", recall_5=False),
+            _make_result("q03", recall_5=True),
+            _make_result("q04", recall_5=False),
+        ]
+        assert compute_recall_at_k(results, 5) == 0.5
+
+    def test_recall_empty_results(self):
+        assert compute_recall_at_k([], 1) == 0.0
+
+
+class TestCitationAccuracy:
+    def test_all_correct(self):
+        results = [
+            _make_result("q01", citation_correct=True),
+            _make_result("q02", citation_correct=True),
+        ]
+        assert compute_citation_accuracy(results) == 1.0
+
+    def test_none_correct(self):
+        results = [
+            _make_result("q01", citation_correct=False),
+            _make_result("q02", citation_correct=False),
+        ]
+        assert compute_citation_accuracy(results) == 0.0
+
+    def test_excludes_abstention_questions(self):
+        """Abstention questions should not count toward citation accuracy."""
+        results = [
+            _make_result("q01", citation_correct=True),
+            _make_result("q02", citation_correct=False, should_abstain=True),
+        ]
+        # Only q01 counts (answerable), and it's correct → 1.0
+        assert compute_citation_accuracy(results) == 1.0
+
+    def test_empty_results(self):
+        assert compute_citation_accuracy([]) == 0.0
+
+
+class TestAbstentionMetrics:
+    def test_precision_recall(self):
+        results = [
+            _make_result("q01", should_abstain=True, did_abstain=True),  # TP
+            _make_result("q02", should_abstain=True, did_abstain=False),  # FN
+            _make_result("q03", should_abstain=False, did_abstain=False),  # TN
+            _make_result("q04", should_abstain=False, did_abstain=True),  # FP
+        ]
+        metrics = compute_abstention_metrics(results)
+        # TP=1, FP=1, FN=1
+        assert metrics["precision"] == 0.5  # 1/(1+1)
+        assert metrics["recall"] == 0.5  # 1/(1+1)
+
+    def test_perfect_abstention(self):
+        results = [
+            _make_result("q01", should_abstain=True, did_abstain=True),
+            _make_result("q02", should_abstain=False, did_abstain=False),
+        ]
+        metrics = compute_abstention_metrics(results)
+        assert metrics["precision"] == 1.0
+        assert metrics["recall"] == 1.0
+
+    def test_no_abstention_cases(self):
+        results = [
+            _make_result("q01", should_abstain=False, did_abstain=False),
+        ]
+        metrics = compute_abstention_metrics(results)
+        assert metrics["precision"] == 0.0
+        assert metrics["recall"] == 0.0
+
+
+class TestCostPerQuery:
+    def test_sonnet_cost(self):
+        results = [
+            _make_result("q01", input_tokens=1000, output_tokens=200),
+        ]
+        # Sonnet: $3/M input, $15/M output
+        # Cost = (1000 * 3 + 200 * 15) / 1_000_000 = (3000 + 3000) / 1_000_000 = 0.006
+        cost = compute_cost_per_query(results, model="sonnet")
+        assert abs(cost - 0.006) < 1e-9
+
+    def test_opus_cost(self):
+        results = [
+            _make_result("q01", input_tokens=1000, output_tokens=200),
+        ]
+        # Opus: $15/M input, $75/M output
+        # Cost = (1000 * 15 + 200 * 75) / 1_000_000 = (15000 + 15000) / 1_000_000 = 0.03
+        cost = compute_cost_per_query(results, model="opus")
+        assert abs(cost - 0.03) < 1e-9
+
+    def test_empty_results(self):
+        assert compute_cost_per_query([], model="sonnet") == 0.0
+
+
+class TestCategoryBreakdown:
+    def test_breakdown_by_category(self):
+        results = [
+            _make_result("q01", recall_1=True, citation_correct=True),
+            _make_result("q02", recall_1=False, citation_correct=False),
+            _make_result("q03", recall_1=True, citation_correct=True),
+        ]
+        gt_map = {"q01": "chiffre_exact", "q02": "chiffre_exact", "q03": "tendance"}
+        breakdown = compute_category_breakdown(results, gt_map)
+
+        assert "chiffre_exact" in breakdown
+        assert "tendance" in breakdown
+        assert breakdown["chiffre_exact"]["count"] == 2.0
+        assert breakdown["chiffre_exact"]["recall_at_1"] == 0.5
+        assert breakdown["tendance"]["count"] == 1.0
+        assert breakdown["tendance"]["recall_at_1"] == 1.0
+
+
+class TestBuildReport:
+    def test_has_all_metrics(self):
+        results = [
+            _make_result("q01", recall_1=True, recall_3=True, recall_5=True, citation_correct=True),
+            _make_result("q02", recall_1=False, recall_3=True, recall_5=True, citation_correct=False),
+            _make_result("q03", should_abstain=True, did_abstain=True),
+        ]
+        gt_map = {"q01": "chiffre_exact", "q02": "tendance", "q03": "abstention"}
+        report = build_report(results, gt_map, model="sonnet")
+
+        assert report.total_questions == 3
+        assert report.recall_at_1 == pytest.approx(1 / 3)
+        assert report.recall_at_3 == pytest.approx(2 / 3)
+        assert report.recall_at_5 == pytest.approx(2 / 3)
+        assert report.abstention_precision == 1.0
+        assert report.abstention_recall == 1.0
+        assert report.cost_per_query_usd > 0
+        assert "chiffre_exact" in report.by_category
+        assert "tendance" in report.by_category
+        assert "abstention" in report.by_category
+        assert len(report.results) == 3
