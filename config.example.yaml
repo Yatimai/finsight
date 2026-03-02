@@ -58,6 +58,10 @@ security:
   prompt_separation: true
   output_citation_check: true
   log_anomalies: true
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8501"
+  rate_limit: "10/minute"
 
 observability:
   log_level: "INFO"

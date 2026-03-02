@@ -46,3 +46,14 @@ class TestAppConfig:
         config = AppConfig()
         assert hasattr(config.anthropic, "timeout_seconds")
         assert config.anthropic.timeout_seconds == 30.0
+
+    def test_cors_default_not_wildcard(self):
+        """Bug 4 regression: CORS must not default to wildcard."""
+        config = AppConfig()
+        assert "*" not in config.security.allowed_origins
+
+    def test_cors_default_is_localhost(self):
+        """Bug 4 regression: default origins should include localhost."""
+        config = AppConfig()
+        origins = config.security.allowed_origins
+        assert any("localhost" in o for o in origins)

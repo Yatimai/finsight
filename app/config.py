@@ -66,6 +66,8 @@ class SecurityConfig(BaseModel):
     prompt_separation: bool = True
     output_citation_check: bool = True
     log_anomalies: bool = True
+    allowed_origins: list[str] = ["http://localhost:3000", "http://localhost:8501"]
+    rate_limit: str = "10/minute"
 
 
 class ObservabilityConfig(BaseModel):
