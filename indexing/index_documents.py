@@ -75,7 +75,7 @@ class ColQwen2Encoder:
         self.mask_non_image_embeddings = mask_non_image_embeddings
         self.border_crop = border_crop
         self.device = self._select_device()
-        self.dtype = torch.bfloat16 if self.device.type == "cuda" and torch.cuda.is_bf16_supported() else torch.float32
+        self.dtype = torch.bfloat16
         self.model = None
         self.processor = None
         self._crop_config = CropConfig()

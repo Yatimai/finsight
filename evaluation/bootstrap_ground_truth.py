@@ -24,6 +24,7 @@ def bootstrap(
     output_path: Path,
     with_generation: bool = False,
     top_k: int = 5,
+    remote_url: str | None = None,
 ) -> None:
     """Run retrieval on each question and fill ground truth fields.
 
@@ -32,7 +33,10 @@ def bootstrap(
         output_path: Where to write ground_truth.json.
         with_generation: Also generate candidate answers with Sonnet.
         top_k: Number of pages to retrieve per question.
+        remote_url: If set, connect to a remote Qdrant server instead of embedded mode.
     """
+    from qdrant_client import QdrantClient
+
     from app.config import AppConfig
     from app.models.retriever import Retriever
 
@@ -43,8 +47,12 @@ def bootstrap(
 
     # Initialize retriever (loads ColQwen2 + Qdrant)
     config = AppConfig()
+    qdrant_client = None
+    if remote_url:
+        print(f"Connecting to remote Qdrant at {remote_url}...")
+        qdrant_client = QdrantClient(url=remote_url)
     print("Initializing retriever (loading ColQwen2 model)...")
-    retriever = Retriever(config)
+    retriever = Retriever(config, qdrant_client=qdrant_client)
 
     # Optional: initialize generator for candidate answers
     generator = None
@@ -142,6 +150,12 @@ def main(argv: list[str] | None = None) -> int:
         default=5,
         help="Number of pages to retrieve per question (default: 5)",
     )
+    parser.add_argument(
+        "--remote",
+        type=str,
+        default=None,
+        help="Remote Qdrant URL (default: use embedded mode from config)",
+    )
     args = parser.parse_args(argv)
 
     if not args.draft.exists():
@@ -153,6 +167,7 @@ def main(argv: list[str] | None = None) -> int:
         output_path=args.output,
         with_generation=args.with_generation,
         top_k=args.top_k,
+        remote_url=args.remote,
     )
     return 0
 
