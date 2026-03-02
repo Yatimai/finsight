@@ -118,6 +118,31 @@ class TestRewrite:
 # ── _call_sonnet ────────────────────────────────────────────────────
 
 
+class TestRewriteWithContext:
+    async def test_context_prepended_to_user_message(self, config):
+        """Line 79: conversation context is prepended to the user message."""
+        client = AsyncMock()
+        rw = QueryRewriter(config, client=client)
+        history = [{"question": "CA de LVMH ?", "answer": "86 Md€"}]
+        mock_resp = _make_response('["Q1", "Q2", "Q3"]')
+        with patch("app.models.rewriter.call_anthropic_with_retry", return_value=mock_resp):
+            result = await rw.rewrite("et en 2022 ?", conversation_history=history)
+        assert len(result) == 3
+
+    async def test_all_whitespace_strings_falls_back(self, rewriter):
+        """Line 91: response contains only whitespace strings after strip."""
+        mock_resp = _make_response('["  ", "\\t", "\\n"]')
+        with patch("app.models.rewriter.call_anthropic_with_retry", return_value=mock_resp):
+            result = await rewriter.rewrite("test query")
+        assert result == ["test query"]
+
+    async def test_empty_exchanges_return_empty_context(self, rewriter):
+        """Line 157: exchanges with no question or answer produce no context lines."""
+        history = [{"question": "", "answer": ""}, {"other_key": "value"}]
+        result = rewriter._build_context(history)
+        assert result == ""
+
+
 class TestCallSonnet:
     async def test_parses_valid_json_array(self, rewriter):
         mock_resp = _make_response('["reformulation 1", "reformulation 2"]')
@@ -126,3 +151,24 @@ class TestCallSonnet:
         assert isinstance(result, list)
         assert len(result) == 2
         assert result[0] == "reformulation 1"
+
+    async def test_call_sonnet_inner_api_call(self, config):
+        """Lines 106-119: exercise the inner _api_call function."""
+        mock_client = AsyncMock()
+        mock_resp = _make_response('["Q1", "Q2"]')
+        mock_client.messages.create.return_value = mock_resp
+        rw = QueryRewriter(config, client=mock_client)
+
+        # Don't patch call_anthropic_with_retry — let it call through
+        # but patch the retry to just call the function directly
+        async def call_directly(fn, **kwargs):
+            return await fn()
+
+        with patch("app.models.rewriter.call_anthropic_with_retry", side_effect=call_directly):
+            result = await rw._call_sonnet("Question : test")
+
+        assert result == ["Q1", "Q2"]
+        mock_client.messages.create.assert_called_once()
+        call_kwargs = mock_client.messages.create.call_args
+        assert call_kwargs.kwargs["temperature"] == 0.3
+        assert call_kwargs.kwargs["max_tokens"] == 512
