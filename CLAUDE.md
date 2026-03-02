@@ -80,10 +80,30 @@ uvicorn app.server:app --reload --port 8000
 - `mock_empty_anthropic_response()` → `.content = []`
 - `mock_anthropic_client()` → `AsyncMock()`
 
+## Évaluation (P2)
+
+Infrastructure dans `evaluation/` :
+
+```bash
+# Bootstrap ground truth (nécessite Qdrant + ColQwen2)
+python -m evaluation.bootstrap_ground_truth
+
+# Évaluation complète
+python -m evaluation.evaluate --ground-truth evaluation/ground_truth.json
+
+# Retrieval seul (gratuit)
+python -m evaluation.evaluate --retrieval-only
+
+# Sans vérification Opus (~$2 au lieu de ~$13)
+python -m evaluation.evaluate --skip-verification
+```
+
+Résultats dans `evaluation/results/` (gitignored).
+
 ## État actuel
 
-- 144 tests, 77.48% coverage global
+- 200 tests
 - P0 (indexation) et P1 (tests coeur métier) terminés
-- P2 (évaluation ground truth) pas commencé
+- P2 (évaluation ground truth) en cours — infra OK, bootstrap à exécuter
 - P3 (frontend) pas commencé
 - P4 (durcissement) partiel : rate limiting et CORS OK, manque auth/circuit breaker/audit trail

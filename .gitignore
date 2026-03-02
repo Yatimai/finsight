@@ -30,6 +30,9 @@ frontend/.next/
 *.log
 logs/
 
+# Evaluation results
+evaluation/results/
+
 # Testing/Coverage
 .coverage
 htmlcov/

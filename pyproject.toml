@@ -58,10 +58,11 @@ markers = [
     "slow: marks tests that require model loading or API calls",
     "gpu: marks tests that require GPU",
     "integration: marks end-to-end integration tests",
+    "evaluation: marks evaluation tests that require ground truth data",
 ]
 
 [tool.coverage.run]
-source = ["app", "indexing"]
+source = ["app", "indexing", "evaluation"]
 omit = [
     "*/tests/*",
 ]
