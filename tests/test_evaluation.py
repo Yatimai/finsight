@@ -1,7 +1,12 @@
 """Tests for evaluation models, metrics, and runner."""
 
+import json
+from dataclasses import dataclass
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
 
+from evaluation.evaluate import evaluate_single, load_ground_truth
 from evaluation.metrics import (
     build_report,
     compute_abstention_metrics,
@@ -338,3 +343,156 @@ class TestBuildReport:
         assert "tendance" in report.by_category
         assert "abstention" in report.by_category
         assert len(report.results) == 3
+
+
+# ── Runner ──────────────────────────────────────────────────────────
+
+
+@dataclass
+class FakeRetrievedPage:
+    """Minimal stand-in for RetrievedPage in evaluation tests."""
+
+    page_number: int
+    source_filename: str = "LVMH_DEU_2024.pdf"
+    score: float = 0.95
+
+
+class FakeQueryResult:
+    """Minimal stand-in for QueryResult."""
+
+    def __init__(self, pages, answer="", citations=None, verification=None, generation_tokens=None):
+        self.pages = pages
+        self.answer = answer
+        self.citations = citations or []
+        self.verification = verification or {}
+        self.generation_tokens = generation_tokens or {"input_tokens": 500, "output_tokens": 100}
+
+
+def _make_pipeline_mock(pages, answer="Réponse test [Page 12]", citations=None, verification=None):
+    """Create a mock pipeline that returns fixed results."""
+    citations = citations or [{"page": 12}]
+    result = FakeQueryResult(
+        pages=pages,
+        answer=answer,
+        citations=citations,
+        verification=verification or {},
+    )
+    pipeline = MagicMock()
+    pipeline.query = AsyncMock(return_value=result)
+    return pipeline
+
+
+class TestEvaluateSingle:
+    def test_correct_retrieval(self):
+        pages = [FakeRetrievedPage(page_number=12), FakeRetrievedPage(page_number=5)]
+        pipeline = _make_pipeline_mock(pages)
+        item = GroundTruthItem(
+            id="q01",
+            question="Quel est le CA de LVMH ?",
+            source_pages=[12],
+            category="chiffre_exact",
+        )
+
+        result = evaluate_single(pipeline, item)
+
+        assert result.question_id == "q01"
+        assert result.recall_at_k[1] is True  # page 12 is top-1
+        assert result.recall_at_k[5] is True
+        assert result.retrieved_pages == [12, 5]
+        assert result.citation_correct is True
+        assert result.should_abstain is False
+        assert result.did_abstain is False
+
+    def test_abstention_detected(self):
+        pages = [FakeRetrievedPage(page_number=3)]
+        pipeline = _make_pipeline_mock(
+            pages,
+            answer="Cette information n'apparaît pas dans les documents fournis.",
+            citations=[],
+        )
+        item = GroundTruthItem(
+            id="q50",
+            question="Quel est le PIB du Japon ?",
+            category="abstention",
+        )
+
+        result = evaluate_single(pipeline, item)
+
+        assert result.should_abstain is True
+        assert result.did_abstain is True
+
+    def test_citation_matching(self):
+        pages = [
+            FakeRetrievedPage(page_number=5),
+            FakeRetrievedPage(page_number=12),
+            FakeRetrievedPage(page_number=23),
+        ]
+        pipeline = _make_pipeline_mock(
+            pages,
+            answer="Le CA est de 86,2 Md€ [Page 5] [Page 12]",
+            citations=[{"page": 5}, {"page": 12}],
+        )
+        item = GroundTruthItem(
+            id="q01",
+            question="Test?",
+            source_pages=[5, 12],
+            category="chiffre_exact",
+        )
+
+        result = evaluate_single(pipeline, item)
+
+        assert result.cited_pages == [5, 12]
+        assert result.citation_correct is True
+
+    def test_skip_verification(self):
+        pages = [FakeRetrievedPage(page_number=12)]
+        pipeline = _make_pipeline_mock(pages)
+        item = GroundTruthItem(id="q01", question="Test?", source_pages=[12], category="chiffre_exact")
+
+        result = evaluate_single(pipeline, item, skip_verification=True)
+
+        # Pipeline should have been called with skip_verification=True
+        pipeline.query.assert_called_once_with(item.question, skip_verification=True)
+        assert result.faithfulness_score is None
+
+    def test_retrieval_only_no_answer(self):
+        pages = [FakeRetrievedPage(page_number=12)]
+        pipeline = _make_pipeline_mock(pages)
+        item = GroundTruthItem(id="q01", question="Test?", source_pages=[12], category="chiffre_exact")
+
+        result = evaluate_single(pipeline, item, retrieval_only=True)
+
+        assert result.generated_answer == ""
+        # skip_verification=True when retrieval_only
+        pipeline.query.assert_called_once_with(item.question, skip_verification=True)
+
+
+class TestLoadGroundTruth:
+    def test_load_valid_file(self, tmp_path):
+        gt_data = [
+            {
+                "id": "q01",
+                "question": "Test?",
+                "category": "chiffre_exact",
+                "source_pages": [12],
+                "expected_answer": "42",
+                "source_document": "test.pdf",
+            }
+        ]
+        gt_file = tmp_path / "gt.json"
+        gt_file.write_text(json.dumps(gt_data))
+
+        items = load_ground_truth(gt_file)
+        assert len(items) == 1
+        assert items[0].id == "q01"
+
+    def test_duplicate_ids_rejected(self, tmp_path):
+        gt_data = [
+            {"id": "q01", "question": "Q1?", "category": "chiffre_exact"},
+            {"id": "q01", "question": "Q2?", "category": "tendance"},
+        ]
+        gt_file = tmp_path / "gt.json"
+        gt_file.write_text(json.dumps(gt_data))
+
+        with pytest.raises(ValueError, match="Duplicate"):
+            load_ground_truth(gt_file)
