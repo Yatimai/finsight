@@ -9,6 +9,7 @@ Addresses the financial domain ambiguity issue:
   (e.g., "CA 2023" vs "CA 2022" should NOT be cache hits)
 """
 
+import threading
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
@@ -51,6 +52,7 @@ class SemanticCache:
 
         # LRU cache: OrderedDict with max size
         self._cache: OrderedDict[str, CacheEntry] = OrderedDict()
+        self._lock = threading.Lock()
 
         # Stats
         self.hits = 0
@@ -67,45 +69,46 @@ class SemanticCache:
         Returns:
             Cached API response dict if hit, None if miss
         """
-        if not self.enabled or len(self._cache) == 0:
+        with self._lock:
+            if not self.enabled or len(self._cache) == 0:
+                self.misses += 1
+                return None
+
+            best_score = 0.0
+            best_key = None
+
+            for key, entry in self._cache.items():
+                score = self._maxsim_similarity(query_embedding, entry.embedding)
+                if score > best_score:
+                    best_score = score
+                    best_key = key
+
+            if best_score >= self.threshold and best_key is not None:
+                entry = self._cache[best_key]
+                entry.hit_count += 1
+                self.hits += 1
+
+                # Move to end (most recently used)
+                self._cache.move_to_end(best_key)
+
+                logger.info(
+                    "cache_hit",
+                    query=query,
+                    cached_query=entry.query,
+                    similarity=round(best_score, 4),
+                    hit_count=entry.hit_count,
+                )
+
+                return entry.response
+
             self.misses += 1
-            return None
-
-        best_score = 0.0
-        best_key = None
-
-        for key, entry in self._cache.items():
-            score = self._maxsim_similarity(query_embedding, entry.embedding)
-            if score > best_score:
-                best_score = score
-                best_key = key
-
-        if best_score >= self.threshold and best_key is not None:
-            entry = self._cache[best_key]
-            entry.hit_count += 1
-            self.hits += 1
-
-            # Move to end (most recently used)
-            self._cache.move_to_end(best_key)
-
-            logger.info(
-                "cache_hit",
+            logger.debug(
+                "cache_miss",
                 query=query,
-                cached_query=entry.query,
-                similarity=round(best_score, 4),
-                hit_count=entry.hit_count,
+                best_similarity=round(best_score, 4),
+                threshold=self.threshold,
             )
-
-            return entry.response
-
-        self.misses += 1
-        logger.debug(
-            "cache_miss",
-            query=query,
-            best_similarity=round(best_score, 4),
-            threshold=self.threshold,
-        )
-        return None
+            return None
 
     def store(self, query: str, query_embedding: torch.Tensor, response: dict) -> None:
         """
@@ -119,16 +122,17 @@ class SemanticCache:
         if not self.enabled:
             return
 
-        # Evict oldest if at capacity
-        while len(self._cache) >= self.max_entries:
-            evicted_key, _ = self._cache.popitem(last=False)
-            logger.debug("cache_evict", evicted_query=evicted_key)
+        with self._lock:
+            # Evict oldest if at capacity
+            while len(self._cache) >= self.max_entries:
+                evicted_key, _ = self._cache.popitem(last=False)
+                logger.debug("cache_evict", evicted_query=evicted_key)
 
-        self._cache[query] = CacheEntry(
-            query=query,
-            embedding=query_embedding.cpu(),
-            response=response,
-        )
+            self._cache[query] = CacheEntry(
+                query=query,
+                embedding=query_embedding.cpu(),
+                response=response,
+            )
 
     def _maxsim_similarity(self, query_a: torch.Tensor, query_b: torch.Tensor) -> float:
         """
@@ -169,6 +173,7 @@ class SemanticCache:
 
     def clear(self) -> None:
         """Clear all cached entries."""
-        self._cache.clear()
-        self.hits = 0
-        self.misses = 0
+        with self._lock:
+            self._cache.clear()
+            self.hits = 0
+            self.misses = 0

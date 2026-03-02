@@ -1,5 +1,8 @@
 """Tests for the semantic cache."""
 
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import torch
 
 from app.cache.semantic_cache import SemanticCache
@@ -85,3 +88,65 @@ class TestSemanticCache:
         cache.clear()
         assert len(cache._cache) == 0
         assert cache.hits == 0
+
+
+class TestThreadSafety:
+    """Tests for thread safety of SemanticCache (Bug 1: race condition)."""
+
+    def test_cache_has_lock_attribute(self):
+        """Cache must have a threading lock for thread safety."""
+        config = CachingConfig(semantic_cache_enabled=True)
+        cache = SemanticCache(config)
+        assert hasattr(cache, "_lock")
+        assert isinstance(cache._lock, type(threading.Lock()))
+
+    def test_concurrent_store_no_error(self):
+        """4 threads x 20 stores on a cache of 5 entries max must not crash."""
+        config = CachingConfig(semantic_cache_enabled=True, similarity_threshold=0.98, max_cache_entries=5)
+        cache = SemanticCache(config)
+
+        def store_batch(thread_id):
+            for i in range(20):
+                emb = _make_embedding(seed=thread_id * 100 + i)
+                cache.store(f"t{thread_id}_q{i}", emb, {"answer": f"t{thread_id}_a{i}"})
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = [executor.submit(store_batch, tid) for tid in range(4)]
+            for f in as_completed(futures):
+                f.result()  # raises if any thread raised
+
+        assert len(cache._cache) <= 5
+
+    def test_concurrent_lookup_and_store_no_error(self):
+        """1 thread lookup + 1 thread store in parallel must not crash."""
+        config = CachingConfig(semantic_cache_enabled=True, similarity_threshold=0.98, max_cache_entries=10)
+        cache = SemanticCache(config)
+
+        # Pre-populate
+        for i in range(5):
+            cache.store(f"q{i}", _make_embedding(seed=i), {"answer": f"a{i}"})
+
+        errors = []
+
+        def do_lookups():
+            try:
+                for i in range(50):
+                    cache.lookup(f"q{i % 5}", _make_embedding(seed=i % 5))
+            except Exception as e:
+                errors.append(e)
+
+        def do_stores():
+            try:
+                for i in range(50):
+                    cache.store(f"new_q{i}", _make_embedding(seed=100 + i), {"answer": f"new_a{i}"})
+            except Exception as e:
+                errors.append(e)
+
+        t1 = threading.Thread(target=do_lookups)
+        t2 = threading.Thread(target=do_stores)
+        t1.start()
+        t2.start()
+        t1.join()
+        t2.join()
+
+        assert errors == [], f"Thread errors: {errors}"
