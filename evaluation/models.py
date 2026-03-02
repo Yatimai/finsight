@@ -1,11 +1,11 @@
 """Data models for ground truth and evaluation results."""
 
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field, field_validator
 
 
-class QuestionCategory(str, Enum):
+class QuestionCategory(StrEnum):
     """Category of evaluation question."""
 
     chiffre_exact = "chiffre_exact"
