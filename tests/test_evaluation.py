@@ -383,7 +383,8 @@ def _make_pipeline_mock(pages, answer="Réponse test [Page 12]", citations=None,
 
 
 class TestEvaluateSingle:
-    def test_correct_retrieval(self):
+    @pytest.mark.asyncio
+    async def test_correct_retrieval(self):
         pages = [FakeRetrievedPage(page_number=12), FakeRetrievedPage(page_number=5)]
         pipeline = _make_pipeline_mock(pages)
         item = GroundTruthItem(
@@ -393,7 +394,7 @@ class TestEvaluateSingle:
             category="chiffre_exact",
         )
 
-        result = evaluate_single(pipeline, item)
+        result = await evaluate_single(pipeline, item)
 
         assert result.question_id == "q01"
         assert result.recall_at_k[1] is True  # page 12 is top-1
@@ -403,7 +404,8 @@ class TestEvaluateSingle:
         assert result.should_abstain is False
         assert result.did_abstain is False
 
-    def test_abstention_detected(self):
+    @pytest.mark.asyncio
+    async def test_abstention_detected(self):
         pages = [FakeRetrievedPage(page_number=3)]
         pipeline = _make_pipeline_mock(
             pages,
@@ -416,12 +418,13 @@ class TestEvaluateSingle:
             category="abstention",
         )
 
-        result = evaluate_single(pipeline, item)
+        result = await evaluate_single(pipeline, item)
 
         assert result.should_abstain is True
         assert result.did_abstain is True
 
-    def test_citation_matching(self):
+    @pytest.mark.asyncio
+    async def test_citation_matching(self):
         pages = [
             FakeRetrievedPage(page_number=5),
             FakeRetrievedPage(page_number=12),
@@ -439,28 +442,30 @@ class TestEvaluateSingle:
             category="chiffre_exact",
         )
 
-        result = evaluate_single(pipeline, item)
+        result = await evaluate_single(pipeline, item)
 
         assert result.cited_pages == [5, 12]
         assert result.citation_correct is True
 
-    def test_skip_verification(self):
+    @pytest.mark.asyncio
+    async def test_skip_verification(self):
         pages = [FakeRetrievedPage(page_number=12)]
         pipeline = _make_pipeline_mock(pages)
         item = GroundTruthItem(id="q01", question="Test?", source_pages=[12], category="chiffre_exact")
 
-        result = evaluate_single(pipeline, item, skip_verification=True)
+        result = await evaluate_single(pipeline, item, skip_verification=True)
 
         # Pipeline should have been called with skip_verification=True
         pipeline.query.assert_called_once_with(item.question, skip_verification=True)
         assert result.faithfulness_score is None
 
-    def test_retrieval_only_no_answer(self):
+    @pytest.mark.asyncio
+    async def test_retrieval_only_no_answer(self):
         pages = [FakeRetrievedPage(page_number=12)]
         pipeline = _make_pipeline_mock(pages)
         item = GroundTruthItem(id="q01", question="Test?", source_pages=[12], category="chiffre_exact")
 
-        result = evaluate_single(pipeline, item, retrieval_only=True)
+        result = await evaluate_single(pipeline, item, retrieval_only=True)
 
         assert result.generated_answer == ""
         # skip_verification=True when retrieval_only

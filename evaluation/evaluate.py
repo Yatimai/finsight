@@ -30,7 +30,7 @@ def load_ground_truth(path: Path) -> list[GroundTruthItem]:
     return items
 
 
-def evaluate_single(
+async def evaluate_single(
     pipeline,
     item: GroundTruthItem,
     skip_verification: bool = False,
@@ -47,25 +47,13 @@ def evaluate_single(
     Returns:
         EvaluationResult with recall, citations, abstention, tokens.
     """
-    import asyncio
-
     t0 = time.time()
 
     # Run the pipeline
-    coro = pipeline.query(
+    query_result = await pipeline.query(
         item.question,
         skip_verification=skip_verification or retrieval_only,
     )
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = None
-
-    if loop and loop.is_running():
-        # Already in an async context (e.g. tests) — the mock returns directly
-        query_result = coro if not asyncio.iscoroutine(coro) else loop.run_until_complete(coro)
-    else:
-        query_result = asyncio.run(coro)
 
     retrieved_pages = [p.page_number for p in query_result.pages]
 
@@ -145,7 +133,7 @@ def format_report_markdown(report) -> str:
     return "\n".join(lines)
 
 
-def main(argv: list[str] | None = None) -> int:
+async def async_main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Evaluate FinSight RAG pipeline against ground truth.",
     )
@@ -182,17 +170,17 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Loaded {len(items)} ground truth questions.")
 
     # Initialize pipeline
-    from app.config import AppConfig
+    from app.config import get_config
     from app.pipeline import Pipeline
 
-    config = AppConfig()
+    config = get_config()
     pipeline = Pipeline(config)
 
     # Evaluate
     results: list[EvaluationResult] = []
     for i, item in enumerate(items, 1):
         print(f"[{i}/{len(items)}] {item.question[:60]}...")
-        result = evaluate_single(
+        result = await evaluate_single(
             pipeline,
             item,
             skip_verification=args.skip_verification,
@@ -222,6 +210,12 @@ def main(argv: list[str] | None = None) -> int:
     print(format_report_markdown(report))
 
     return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    import asyncio
+
+    return asyncio.run(async_main(argv))
 
 
 if __name__ == "__main__":
