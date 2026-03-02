@@ -72,6 +72,12 @@ uvicorn app.server:app --reload --port 8000
 
 8. **Indexation GPU-only** : `indexing/index_documents.py` nécessite un GPU (ColQwen2). Marqué `@pytest.mark.gpu`. Le snapshot Qdrant est dans `data/qdrant/` (non versionné, 3.2 Go).
 
+9. **Qdrant nécessite Docker** : les données dans `data/qdrant/` sont au format natif du serveur Qdrant Rust. Le mode `embedded` (qdrant-client Python local) **ne peut pas** lire ce format. Toujours lancer le serveur Docker avant l'API ou l'évaluation : `docker run -d -p 6333:6333 -v ./data/qdrant:/qdrant/storage qdrant/qdrant`
+
+10. **ColQwen2 en bfloat16** : le modèle est toujours chargé en bfloat16 (~3.7 Go). Sur WSL avec 12 Go, ça passe mais c'est serré avec Docker Qdrant en parallèle.
+
+11. **`evaluate_single` est async** : les tests doivent utiliser `@pytest.mark.asyncio` et `await`. Le pipeline mock utilise `AsyncMock` pour `pipeline.query`.
+
 ## Fixtures partagées (`tests/conftest.py`)
 
 - `config()` → `AppConfig()` par défaut
@@ -102,8 +108,19 @@ Résultats dans `evaluation/results/` (gitignored).
 
 ## État actuel
 
-- 200 tests
+- 211 tests, 83% coverage
 - P0 (indexation) et P1 (tests coeur métier) terminés
-- P2 (évaluation ground truth) en cours — infra OK, bootstrap à exécuter
+- P2 (évaluation ground truth) terminé — baseline : recall@1=34%, recall@5=54%, citation=52%
 - P3 (frontend) pas commencé
 - P4 (durcissement) partiel : rate limiting et CORS OK, manque auth/circuit breaker/audit trail
+
+### Baseline P2 (skip-verification, 50 questions)
+
+| Métrique | Valeur |
+|---|---|
+| Recall@1 | 34% |
+| Recall@3 | 52% |
+| Recall@5 | 54% |
+| Citation accuracy | 52% |
+| Abstention recall | 75% |
+| Coût/query | $0.029 |

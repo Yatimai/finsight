@@ -33,18 +33,18 @@ caching:
   max_cache_entries: 1000
 
 qdrant:
-  mode: "embedded"          # "embedded" for queries, "remote" for indexing
+  mode: "remote"            # "remote" required — data uses Qdrant server format
   path: "./data/qdrant"
   collection_name: "financial_pages"
-  # remote_url: "http://localhost:6333"
+  remote_url: "http://localhost:6333"
   #
-  # Indexation : utiliser mode "remote" avec un serveur Qdrant dédié.
-  # L'écriture intensive (milliers de pages, gros vecteurs) est plus stable
-  # avec un serveur séparé qui gère sa propre mémoire et ses flush disque.
-  #   docker run -p 6333:6333 -v ./data/qdrant:/qdrant/storage qdrant/qdrant
+  # IMPORTANT: les données dans data/qdrant/ sont au format natif du serveur
+  # Qdrant Rust. Le mode "embedded" (qdrant-client Python local) ne peut PAS
+  # lire ce format. Il faut toujours un serveur Qdrant:
   #
-  # Requêtes : le mode "embedded" suffit. La collection est petite,
-  # les requêtes sont en lecture seule, pas besoin d'un process séparé.
+  #   docker run -d -p 6333:6333 -v ./data/qdrant:/qdrant/storage qdrant/qdrant
+  #
+  # Le serveur doit tourner AVANT de lancer l'API ou l'évaluation.
 
 error_handling:
   generation_max_retries: 3
