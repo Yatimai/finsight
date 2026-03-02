@@ -1,0 +1,678 @@
+[
+  {
+    "id": "q01",
+    "question": "Quel est le chiffre d'affaires consolidé de LVMH en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_pages": [
+      114,
+      338,
+      366,
+      396,
+      432
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q02",
+    "question": "Quel est le résultat opérationnel courant de LVMH en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_pages": [
+      327,
+      338,
+      412,
+      416,
+      451
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q03",
+    "question": "Comment ont évolué les ventes de LVMH par zone géographique entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_pages": [
+      4,
+      14,
+      114,
+      316,
+      317
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q04",
+    "question": "Quelle est la répartition du chiffre d'affaires de LVMH par groupe d'activités ?",
+    "category": "tableau",
+    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_pages": [
+      15,
+      16,
+      21,
+      62,
+      114
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q05",
+    "question": "Quel est le montant du dividende par action proposé par LVMH pour l'exercice 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_pages": [
+      323,
+      329,
+      366,
+      416,
+      467
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q06",
+    "question": "Quel est le chiffre d'affaires total (total net sales) d'Apple pour l'exercice fiscal 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      5,
+      58,
+      63,
+      76,
+      96
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q07",
+    "question": "Comment ont évolué les revenus d'Apple dans la catégorie Services entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_pages": [
+      28,
+      145,
+      153,
+      171,
+      420
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q08",
+    "question": "Quel est le bénéfice net (net income) d'Apple pour l'exercice fiscal 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      98,
+      193,
+      232,
+      329,
+      638
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q09",
+    "question": "Quelle est la répartition des revenus d'Apple par segment géographique ?",
+    "category": "tableau",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      6,
+      16,
+      17,
+      96,
+      196
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q10",
+    "question": "Comment se comparent les marges brutes d'Apple entre les produits et les services ?",
+    "category": "comparaison",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      113,
+      160,
+      221,
+      332,
+      420
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q11",
+    "question": "Quel est le produit net bancaire (PNB) de BNP Paribas en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      144,
+      152,
+      176,
+      638,
+      691
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q12",
+    "question": "Comment a évolué le coût du risque de BNP Paribas entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      144,
+      145,
+      170,
+      184,
+      228
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q13",
+    "question": "Quel est le ratio CET1 (Common Equity Tier 1) de BNP Paribas fin 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      122,
+      172,
+      337,
+      348,
+      387
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q14",
+    "question": "Quels sont les résultats comparés des pôles Corporate & Institutional Banking et Commercial Banking de BNP Paribas ?",
+    "category": "comparaison",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      5,
+      143,
+      147,
+      176,
+      233
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q15",
+    "question": "Quelle est la contribution de chaque pôle d'activité au résultat net de BNP Paribas ?",
+    "category": "tableau",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      5,
+      143,
+      147,
+      176,
+      233
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q16",
+    "question": "Quel est le chiffre d'affaires net de Danone en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      57,
+      58,
+      62,
+      76,
+      144
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q17",
+    "question": "Comment a évolué la marge opérationnelle courante de Danone entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      5,
+      52,
+      57,
+      59,
+      60
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q18",
+    "question": "Quelle est la croissance en données comparables (like-for-like) de Danone par catégorie de produits ?",
+    "category": "comparaison",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      5,
+      16,
+      58,
+      59,
+      418
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q19",
+    "question": "Quel est le free cash flow de Danone en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      5,
+      52,
+      57,
+      63,
+      64
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q20",
+    "question": "Quelle est la répartition géographique du chiffre d'affaires de Danone ?",
+    "category": "tableau",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      16,
+      17,
+      58,
+      63,
+      96
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q21",
+    "question": "Quel est le chiffre d'affaires total (total net revenue) de JPMorgan Chase en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "annualreport-2024.pdf",
+    "source_pages": [
+      5,
+      76,
+      93,
+      111,
+      206
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q22",
+    "question": "Comment a évolué le résultat net de JPMorgan entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      7,
+      50,
+      56,
+      186,
+      412
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q23",
+    "question": "Quel est le cours de l'action JPMorgan au 31 décembre 2024 ?",
+    "category": "abstention",
+    "source_document": "",
+    "source_pages": [],
+    "expected_answer": "Cette question est hors du scope des documents disponibles."
+  },
+  {
+    "id": "q24",
+    "question": "Quels sont les résultats comparés des divisions Consumer & Community Banking et Corporate & Investment Bank de JPMorgan ?",
+    "category": "comparaison",
+    "source_document": "annualreport-2024.pdf",
+    "source_pages": [
+      13,
+      70,
+      86,
+      104,
+      145
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q25",
+    "question": "Comment a évolué le portefeuille de prêts de JPMorgan sur les 3 dernières années ?",
+    "category": "graphique",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      19,
+      287,
+      491,
+      719,
+      720
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q26",
+    "question": "Quel est le chiffre d'affaires total de Pfizer en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      5,
+      58,
+      76,
+      96,
+      358
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q27",
+    "question": "Comment ont évolué les revenus de Pfizer liés au COVID (Paxlovid, Comirnaty) entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "10K_Final.pdf",
+    "source_pages": [
+      3,
+      35,
+      37,
+      48,
+      108
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q28",
+    "question": "Quel est le montant des dépenses de R&D de Pfizer en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      28,
+      319,
+      426,
+      509,
+      534
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q29",
+    "question": "Comment se comparent les revenus de Pfizer entre les États-Unis et l'international ?",
+    "category": "comparaison",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      15,
+      17,
+      19,
+      226,
+      283
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q30",
+    "question": "Quelle est l'évolution du pipeline de médicaments de Pfizer en phases cliniques ?",
+    "category": "graphique",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      178,
+      184,
+      250,
+      342,
+      380
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q31",
+    "question": "Quel est le chiffre d'affaires total (total revenues) de Tesla en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      58,
+      59,
+      63,
+      96,
+      358
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q32",
+    "question": "Comment a évolué la marge brute de Tesla entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      7,
+      52,
+      54,
+      92,
+      113
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q33",
+    "question": "Combien de véhicules Tesla a-t-il livrés en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      109,
+      166,
+      176,
+      380,
+      719
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q34",
+    "question": "Comment se comparent les revenus de Tesla entre le segment Automotive et le segment Energy Generation and Storage ?",
+    "category": "comparaison",
+    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_pages": [
+      109,
+      164,
+      183,
+      719,
+      898
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q35",
+    "question": "Quelle est l'évolution trimestrielle des livraisons de véhicules Tesla au cours de l'année 2024 ?",
+    "category": "graphique",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      49,
+      63,
+      186,
+      427,
+      719
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q36",
+    "question": "Quel est le chiffre d'affaires de TotalEnergies en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      7,
+      50,
+      92,
+      455,
+      641
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q37",
+    "question": "Comment a évolué la production d'hydrocarbures de TotalEnergies entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      17,
+      49,
+      74,
+      114,
+      180
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q38",
+    "question": "Quel est le résultat net ajusté de TotalEnergies en 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      49,
+      50,
+      54,
+      55,
+      57
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q39",
+    "question": "Quel est le prix moyen du baril de pétrole Brent en 2024 ?",
+    "category": "abstention",
+    "source_document": "",
+    "source_pages": [],
+    "expected_answer": "Cette question est hors du scope des documents disponibles."
+  },
+  {
+    "id": "q40",
+    "question": "Quelle est la répartition des investissements de TotalEnergies entre les énergies fossiles et renouvelables ?",
+    "category": "tableau",
+    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_pages": [
+      5,
+      17,
+      34,
+      181,
+      661
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q41",
+    "question": "Quel est le chiffre d'affaires total (total revenues) de Walmart pour l'exercice fiscal 2025 ?",
+    "category": "chiffre_exact",
+    "source_document": "deu2024accessibleversion.pdf",
+    "source_pages": [
+      58,
+      59,
+      63,
+      76,
+      96
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q42",
+    "question": "Comment ont évolué les ventes e-commerce de Walmart entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_pages": [
+      8,
+      24,
+      38,
+      40,
+      61
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q43",
+    "question": "Comment se comparent les résultats opérationnels de Walmart US et Walmart International ?",
+    "category": "comparaison",
+    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
+    "source_pages": [
+      11,
+      32,
+      38,
+      80,
+      81
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q44",
+    "question": "Quelle est la répartition des ventes de Walmart par segment (Walmart US, Walmart International, Sam's Club) ?",
+    "category": "tableau",
+    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
+    "source_pages": [
+      32,
+      61,
+      80,
+      81,
+      82
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q45",
+    "question": "Quelle est l'évolution du nombre de magasins Walmart dans le monde ?",
+    "category": "graphique",
+    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_pages": [
+      23,
+      61,
+      62,
+      325,
+      386
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q46",
+    "question": "Quel est le carnet de commandes (order backlog) d'Airbus fin 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "Airbus Annual Report 2024.pdf",
+    "source_pages": [
+      114,
+      127,
+      254,
+      273,
+      474
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q47",
+    "question": "Quelle est la prévision de croissance du PIB mondial selon le FMI pour 2025 ?",
+    "category": "abstention",
+    "source_document": "",
+    "source_pages": [],
+    "expected_answer": "Cette question est hors du scope des documents disponibles."
+  },
+  {
+    "id": "q48",
+    "question": "Comment a évolué le résultat opérationnel (EBIT) ajusté d'Airbus entre 2023 et 2024 ?",
+    "category": "tendance",
+    "source_document": "Airbus Annual Report 2024.pdf",
+    "source_pages": [
+      9,
+      17,
+      124,
+      271,
+      345
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q49",
+    "question": "Comment se comparent les performances des divisions Airbus (Commercial Aircraft, Helicopters, Defence and Space) ?",
+    "category": "comparaison",
+    "source_document": "Airbus Annual Report 2024.pdf",
+    "source_pages": [
+      3,
+      9,
+      26,
+      28,
+      31
+    ],
+    "expected_answer": ""
+  },
+  {
+    "id": "q50",
+    "question": "Quel est le taux de chômage en France en 2024 ?",
+    "category": "abstention",
+    "source_document": "",
+    "source_pages": [],
+    "expected_answer": "Cette question est hors du scope des documents disponibles."
+  }
+]
