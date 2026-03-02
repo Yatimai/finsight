@@ -7,6 +7,7 @@ Runs asynchronously via batch API or synchronously.
 import json
 
 import anthropic
+import httpx
 
 from app.config import AppConfig
 from app.errors import call_anthropic_with_retry, extract_text_from_response
@@ -69,7 +70,10 @@ class Verifier:
     def __init__(self, config: AppConfig, client: anthropic.AsyncAnthropic):
         self.config = config
         self.client = client
-        self.sync_client = anthropic.Anthropic(api_key=config.anthropic.api_key)
+        self.sync_client = anthropic.Anthropic(
+            api_key=config.anthropic.api_key,
+            timeout=httpx.Timeout(config.anthropic.timeout_seconds),
+        )
         self.enabled = config.verification.enabled
         self.mode = config.verification.mode
 

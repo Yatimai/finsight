@@ -33,10 +33,18 @@ caching:
   max_cache_entries: 1000
 
 qdrant:
-  mode: "embedded"          # "embedded" | "remote"
+  mode: "embedded"          # "embedded" for queries, "remote" for indexing
   path: "./data/qdrant"
   collection_name: "financial_pages"
-  # remote_url: "https://..."
+  # remote_url: "http://localhost:6333"
+  #
+  # Indexation : utiliser mode "remote" avec un serveur Qdrant dédié.
+  # L'écriture intensive (milliers de pages, gros vecteurs) est plus stable
+  # avec un serveur séparé qui gère sa propre mémoire et ses flush disque.
+  #   docker run -p 6333:6333 -v ./data/qdrant:/qdrant/storage qdrant/qdrant
+  #
+  # Requêtes : le mode "embedded" suffit. La collection est petite,
+  # les requêtes sont en lecture seule, pas besoin d'un process séparé.
 
 error_handling:
   generation_max_retries: 3
@@ -58,6 +66,7 @@ observability:
 
 anthropic:
   api_key: ""               # Or set ANTHROPIC_API_KEY env var
+  timeout_seconds: 30.0
 
 data:
   documents_dir: "./data/documents"

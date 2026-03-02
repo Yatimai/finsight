@@ -76,6 +76,7 @@ class ObservabilityConfig(BaseModel):
 
 class AnthropicConfig(BaseModel):
     api_key: str = ""
+    timeout_seconds: float = 30.0
 
 
 class DataConfig(BaseModel):

@@ -9,6 +9,7 @@ import uuid
 from datetime import UTC, datetime
 
 import anthropic
+import httpx
 
 from app.cache.semantic_cache import SemanticCache
 from app.cache.verification_store import VerificationStore
@@ -138,7 +139,10 @@ class Pipeline:
         self.config = config
 
         # Initialize Anthropic client
-        self.client = anthropic.AsyncAnthropic(api_key=config.anthropic.api_key)
+        self.client = anthropic.AsyncAnthropic(
+            api_key=config.anthropic.api_key,
+            timeout=httpx.Timeout(config.anthropic.timeout_seconds),
+        )
 
         # Initialize components
         self.rewriter = QueryRewriter(config, self.client)

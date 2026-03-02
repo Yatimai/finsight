@@ -40,3 +40,9 @@ class TestAppConfig:
         from app.config import _config
 
         assert _config is None
+
+    def test_anthropic_timeout_default(self):
+        """Bug 2 regression: AnthropicConfig must have a timeout_seconds field."""
+        config = AppConfig()
+        assert hasattr(config.anthropic, "timeout_seconds")
+        assert config.anthropic.timeout_seconds == 30.0
