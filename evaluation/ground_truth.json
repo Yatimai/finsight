@@ -73,13 +73,13 @@
     "id": "q06",
     "question": "Quel est le chiffre d'affaires total (total net sales) d'Apple pour l'exercice fiscal 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "deu2024accessibleversion.pdf",
+    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
     "source_pages": [
-      5,
-      58,
-      63,
-      76,
-      96
+      25,
+      26,
+      27,
+      32,
+      38
     ],
     "expected_answer": ""
   },
@@ -87,13 +87,13 @@
     "id": "q07",
     "question": "Comment ont évolué les revenus d'Apple dans la catégorie Services entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
     "source_pages": [
-      28,
-      145,
-      153,
-      171,
-      420
+      25,
+      26,
+      27,
+      32,
+      38
     ],
     "expected_answer": ""
   },
@@ -101,13 +101,13 @@
     "id": "q08",
     "question": "Quel est le bénéfice net (net income) d'Apple pour l'exercice fiscal 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
     "source_pages": [
-      98,
-      193,
-      232,
-      329,
-      638
+      32,
+      33,
+      35,
+      37,
+      39
     ],
     "expected_answer": ""
   },
@@ -115,13 +115,13 @@
     "id": "q09",
     "question": "Quelle est la répartition des revenus d'Apple par segment géographique ?",
     "category": "tableau",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
     "source_pages": [
-      6,
-      16,
-      17,
-      96,
-      196
+      5,
+      25,
+      39,
+      49,
+      50
     ],
     "expected_answer": ""
   },
@@ -129,13 +129,13 @@
     "id": "q10",
     "question": "Comment se comparent les marges brutes d'Apple entre les produits et les services ?",
     "category": "comparaison",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
     "source_pages": [
-      113,
-      160,
-      221,
-      332,
-      420
+      4,
+      18,
+      26,
+      27,
+      32
     ],
     "expected_answer": ""
   },
@@ -297,13 +297,13 @@
     "id": "q22",
     "question": "Comment a évolué le résultat net de JPMorgan entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_document": "annualreport-2024.pdf",
     "source_pages": [
-      7,
-      50,
-      56,
-      186,
-      412
+      2,
+      13,
+      75,
+      88,
+      331
     ],
     "expected_answer": ""
   },
@@ -333,13 +333,13 @@
     "id": "q25",
     "question": "Comment a évolué le portefeuille de prêts de JPMorgan sur les 3 dernières années ?",
     "category": "graphique",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_document": "annualreport-2024.pdf",
     "source_pages": [
-      19,
-      287,
-      491,
-      719,
-      720
+      7,
+      47,
+      72,
+      74,
+      75
     ],
     "expected_answer": ""
   },
@@ -347,13 +347,13 @@
     "id": "q26",
     "question": "Quel est le chiffre d'affaires total de Pfizer en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "deu2024accessibleversion.pdf",
+    "source_document": "10K_Final.pdf",
     "source_pages": [
-      5,
-      58,
-      76,
-      96,
-      358
+      34,
+      57,
+      59,
+      60,
+      111
     ],
     "expected_answer": ""
   },
@@ -375,13 +375,13 @@
     "id": "q28",
     "question": "Quel est le montant des dépenses de R&D de Pfizer en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_document": "10K_Final.pdf",
     "source_pages": [
-      28,
-      319,
-      426,
-      509,
-      534
+      11,
+      34,
+      35,
+      105,
+      106
     ],
     "expected_answer": ""
   },
@@ -389,13 +389,13 @@
     "id": "q29",
     "question": "Comment se comparent les revenus de Pfizer entre les États-Unis et l'international ?",
     "category": "comparaison",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_document": "10K_Final.pdf",
     "source_pages": [
-      15,
-      17,
-      19,
-      226,
-      283
+      41,
+      43,
+      77,
+      78,
+      107
     ],
     "expected_answer": ""
   },
@@ -403,13 +403,13 @@
     "id": "q30",
     "question": "Quelle est l'évolution du pipeline de médicaments de Pfizer en phases cliniques ?",
     "category": "graphique",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_document": "10K_Final.pdf",
     "source_pages": [
-      178,
-      184,
-      250,
-      342,
-      380
+      11,
+      24,
+      36,
+      45,
+      48
     ],
     "expected_answer": ""
   },
@@ -417,13 +417,13 @@
     "id": "q31",
     "question": "Quel est le chiffre d'affaires total (total revenues) de Tesla en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "deu2024accessibleversion.pdf",
+    "source_document": "tsla-20241231-gen.pdf",
     "source_pages": [
-      58,
-      59,
-      63,
-      96,
-      358
+      14,
+      51,
+      52,
+      53,
+      54
     ],
     "expected_answer": ""
   },
@@ -431,13 +431,13 @@
     "id": "q32",
     "question": "Comment a évolué la marge brute de Tesla entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_document": "tsla-20241231-gen.pdf",
     "source_pages": [
-      7,
+      34,
       52,
-      54,
-      92,
-      113
+      53,
+      55,
+      91
     ],
     "expected_answer": ""
   },
@@ -445,13 +445,13 @@
     "id": "q33",
     "question": "Combien de véhicules Tesla a-t-il livrés en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_document": "tsla-20241231-gen.pdf",
     "source_pages": [
-      109,
-      166,
-      176,
-      380,
-      719
+      36,
+      52,
+      53,
+      55,
+      93
     ],
     "expected_answer": ""
   },
@@ -459,13 +459,13 @@
     "id": "q34",
     "question": "Comment se comparent les revenus de Tesla entre le segment Automotive et le segment Energy Generation and Storage ?",
     "category": "comparaison",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
+    "source_document": "tsla-20241231-gen.pdf",
     "source_pages": [
-      109,
-      164,
-      183,
-      719,
-      898
+      5,
+      52,
+      58,
+      94,
+      95
     ],
     "expected_answer": ""
   },
@@ -473,13 +473,13 @@
     "id": "q35",
     "question": "Quelle est l'évolution trimestrielle des livraisons de véhicules Tesla au cours de l'année 2024 ?",
     "category": "graphique",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
+    "source_document": "tsla-20241231-gen.pdf",
     "source_pages": [
-      49,
-      63,
-      186,
-      427,
-      719
+      34,
+      36,
+      52,
+      91,
+      92
     ],
     "expected_answer": ""
   },
@@ -551,13 +551,13 @@
     "id": "q41",
     "question": "Quel est le chiffre d'affaires total (total revenues) de Walmart pour l'exercice fiscal 2025 ?",
     "category": "chiffre_exact",
-    "source_document": "deu2024accessibleversion.pdf",
+    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
     "source_pages": [
-      58,
-      59,
-      63,
-      76,
-      96
+      8,
+      43,
+      56,
+      61,
+      81
     ],
     "expected_answer": ""
   },
@@ -565,12 +565,12 @@
     "id": "q42",
     "question": "Comment ont évolué les ventes e-commerce de Walmart entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
     "source_pages": [
       8,
-      24,
       38,
       40,
+      44,
       61
     ],
     "expected_answer": ""
@@ -607,13 +607,13 @@
     "id": "q45",
     "question": "Quelle est l'évolution du nombre de magasins Walmart dans le monde ?",
     "category": "graphique",
-    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
+    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
     "source_pages": [
-      23,
-      61,
-      62,
-      325,
-      386
+      2,
+      8,
+      14,
+      26,
+      38
     ],
     "expected_answer": ""
   },
