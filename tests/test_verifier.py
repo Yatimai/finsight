@@ -224,7 +224,6 @@ class TestVerify:
 
     async def test_verify_empty_content_returns_error(self, verifier):
         """Bug 3 regression: empty response.content must not raise IndexError."""
-        # Mock response with empty content list
         mock_response = MagicMock()
         mock_response.content = []
         mock_response.usage = MagicMock()
@@ -234,6 +233,55 @@ class TestVerify:
 
         assert result["status"] == "error"
         assert result["confidence"] is None
+
+    async def test_verify_success_returns_parsed_result(self, verifier):
+        """Successful verify() returns parsed claims with token usage."""
+        verification_json = json.dumps(
+            {
+                "claims": [
+                    {"id": 1, "claim": "Revenue is $10B", "verdict": "CONFIRMÉ", "evidence": "p12", "correction": None}
+                ],
+                "confidence": 0.95,
+                "summary": "All confirmed.",
+            }
+        )
+        mock_response = MagicMock()
+        block = MagicMock()
+        block.text = verification_json
+        mock_response.content = [block]
+        mock_response.usage = MagicMock()
+        mock_response.usage.input_tokens = 500
+        mock_response.usage.output_tokens = 200
+        mock_response.usage.cache_read_input_tokens = 100
+
+        with (
+            patch("app.models.verifier.call_anthropic_with_retry", return_value=mock_response),
+            patch.object(verifier, "_encode_image", return_value=None),
+        ):
+            result = await verifier.verify("Q?", "A.", [FakePage()])
+
+        assert result["status"] == "verified"
+        assert result["confidence"] == 0.95
+        assert result["claims_verified"] == 1
+        assert result["input_tokens"] == 500
+        assert result["output_tokens"] == 200
+        assert result["cache_read_tokens"] == 100
+
+    async def test_verify_api_error_returns_error_result(self, verifier):
+        """API failure in verify() returns error result (non-blocking)."""
+        from app.errors import ServiceUnavailableError
+
+        with (
+            patch(
+                "app.models.verifier.call_anthropic_with_retry",
+                side_effect=ServiceUnavailableError("API down"),
+            ),
+            patch.object(verifier, "_encode_image", return_value=None),
+        ):
+            result = await verifier.verify("Q?", "A.", [FakePage()])
+
+        assert result["status"] == "error"
+        assert "API down" in result["summary"]
 
 
 # ── submit_batch (batch_async) ───────────────────────────────────
@@ -286,6 +334,152 @@ class TestBatchAsync:
 
         assert result["status"] == "disabled"
         mock_sync.messages.batches.create.assert_not_called()
+
+
+# ── poll_batch ───────────────────────────────────────────────────
+
+
+class TestPollBatch:
+    async def test_poll_batch_success(self, verifier):
+        """poll_batch returns parsed verification on successful batch."""
+        verification_json = json.dumps(
+            {
+                "claims": [{"id": 1, "claim": "X", "verdict": "CONFIRMÉ", "evidence": "p1", "correction": None}],
+                "confidence": 0.9,
+                "summary": "OK",
+            }
+        )
+
+        # Mock batch retrieve → ended
+        mock_batch = MagicMock()
+        mock_batch.processing_status = "ended"
+        verifier.sync_client.messages.batches.retrieve.return_value = mock_batch
+
+        # Mock batch results stream
+        mock_entry = MagicMock()
+        mock_entry.custom_id = "q-1"
+        mock_entry.result.type = "succeeded"
+        content_block = MagicMock()
+        content_block.text = verification_json
+        mock_entry.result.message.content = [content_block]
+        mock_entry.result.message.usage.input_tokens = 300
+        mock_entry.result.message.usage.output_tokens = 150
+        verifier.sync_client.messages.batches.results.return_value = [mock_entry]
+
+        result = await verifier.poll_batch("batch_123", "q-1")
+
+        assert result["status"] == "verified"
+        assert result["confidence"] == 0.9
+        assert result["input_tokens"] == 300
+        assert result["output_tokens"] == 150
+        assert result["batch_id"] == "batch_123"
+
+    async def test_poll_batch_empty_content(self, verifier):
+        """poll_batch with empty content returns error (Bug 3)."""
+        mock_batch = MagicMock()
+        mock_batch.processing_status = "ended"
+        verifier.sync_client.messages.batches.retrieve.return_value = mock_batch
+
+        mock_entry = MagicMock()
+        mock_entry.custom_id = "q-1"
+        mock_entry.result.type = "succeeded"
+        mock_entry.result.message.content = []
+        verifier.sync_client.messages.batches.results.return_value = [mock_entry]
+
+        result = await verifier.poll_batch("batch_123", "q-1")
+        assert result["status"] == "error"
+        assert "Empty content" in result["summary"]
+
+    async def test_poll_batch_request_failed(self, verifier):
+        """poll_batch with failed request returns error."""
+        mock_batch = MagicMock()
+        mock_batch.processing_status = "ended"
+        verifier.sync_client.messages.batches.retrieve.return_value = mock_batch
+
+        mock_entry = MagicMock()
+        mock_entry.custom_id = "q-1"
+        mock_entry.result.type = "errored"
+        verifier.sync_client.messages.batches.results.return_value = [mock_entry]
+
+        result = await verifier.poll_batch("batch_123", "q-1")
+        assert result["status"] == "error"
+        assert "failed" in result["summary"]
+
+    async def test_poll_batch_query_id_not_found(self, verifier):
+        """poll_batch with missing query_id returns error."""
+        mock_batch = MagicMock()
+        mock_batch.processing_status = "ended"
+        verifier.sync_client.messages.batches.retrieve.return_value = mock_batch
+
+        mock_entry = MagicMock()
+        mock_entry.custom_id = "other-query"
+        mock_entry.result.type = "succeeded"
+        verifier.sync_client.messages.batches.results.return_value = [mock_entry]
+
+        result = await verifier.poll_batch("batch_123", "q-1")
+        assert result["status"] == "error"
+        assert "not found" in result["summary"]
+
+    async def test_poll_batch_waits_for_processing(self, verifier):
+        """poll_batch polls until batch is ended."""
+        batch_processing = MagicMock()
+        batch_processing.processing_status = "in_progress"
+        batch_ended = MagicMock()
+        batch_ended.processing_status = "ended"
+        verifier.sync_client.messages.batches.retrieve.side_effect = [batch_processing, batch_ended]
+
+        verification_json = json.dumps(
+            {
+                "claims": [],
+                "confidence": 0.8,
+                "summary": "OK",
+            }
+        )
+        mock_entry = MagicMock()
+        mock_entry.custom_id = "q-1"
+        mock_entry.result.type = "succeeded"
+        block = MagicMock()
+        block.text = verification_json
+        mock_entry.result.message.content = [block]
+        mock_entry.result.message.usage.input_tokens = 100
+        mock_entry.result.message.usage.output_tokens = 50
+        verifier.sync_client.messages.batches.results.return_value = [mock_entry]
+
+        with patch("asyncio.sleep", new_callable=AsyncMock):
+            result = await verifier.poll_batch("batch_123", "q-1")
+
+        assert result["status"] == "verified"
+        assert verifier.sync_client.messages.batches.retrieve.call_count == 2
+
+    async def test_poll_batch_poll_error_recovers(self, verifier):
+        """poll_batch recovers from transient errors during polling."""
+        batch_error_then_ended = [
+            Exception("connection reset"),
+            MagicMock(processing_status="ended"),
+        ]
+        verifier.sync_client.messages.batches.retrieve.side_effect = batch_error_then_ended
+
+        verification_json = json.dumps(
+            {
+                "claims": [],
+                "confidence": 0.85,
+                "summary": "OK",
+            }
+        )
+        mock_entry = MagicMock()
+        mock_entry.custom_id = "q-1"
+        mock_entry.result.type = "succeeded"
+        block = MagicMock()
+        block.text = verification_json
+        mock_entry.result.message.content = [block]
+        mock_entry.result.message.usage.input_tokens = 100
+        mock_entry.result.message.usage.output_tokens = 50
+        verifier.sync_client.messages.batches.results.return_value = [mock_entry]
+
+        with patch("asyncio.sleep", new_callable=AsyncMock):
+            result = await verifier.poll_batch("batch_123", "q-1")
+
+        assert result["status"] == "verified"
 
 
 # ── System prompt content ────────────────────────────────────────
