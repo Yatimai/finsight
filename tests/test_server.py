@@ -59,7 +59,7 @@ def client():
 
 class TestQueryEndpoint:
     def test_valid_query_returns_200(self, client):
-        tc, mock_pipeline = client
+        tc, _mock_pipeline = client
         response = tc.post("/api/v1/query", json={"question": "Quel est le CA 2023 ?"})
         assert response.status_code == 200
         data = response.json()

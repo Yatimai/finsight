@@ -67,5 +67,5 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 25  # TODO: raise to 70% after integration tests
+fail_under = 70
 show_missing = true

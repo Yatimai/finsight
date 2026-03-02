@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install mypy pydantic pyyaml anthropic fastapi structlog
+      - run: pip install mypy pydantic pyyaml anthropic fastapi structlog slowapi
       - run: mypy app/ --ignore-missing-imports
 
   test:
@@ -39,5 +39,5 @@ jobs:
           pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install pydantic pyyaml anthropic fastapi structlog uvicorn \
                       pytest pytest-asyncio pytest-cov httpx Pillow \
-                      qdrant-client
+                      qdrant-client slowapi
       - run: pytest --cov=app --cov=indexing --cov-report=term-missing -m "not slow and not gpu and not integration"
