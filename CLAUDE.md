@@ -37,21 +37,24 @@ Query → Rewriter (Sonnet, RAG Fusion ×3) → Retriever (ColQwen2 + Qdrant + R
 
 ## Commandes
 
+**IMPORTANT** : toujours utiliser le venv (`.venv/bin/python`, `.venv/bin/pytest`). Le Python système n'a pas `slowapi`, `colpali_engine`, etc. → import errors.
+
 ```bash
 # Tests (pas de GPU, pas d'API réelle)
-pytest -v -m "not slow and not gpu and not integration"
+.venv/bin/pytest -v -m "not slow and not gpu and not integration"
 
 # Coverage
-pytest --cov=app --cov=indexing --cov-report=term-missing -m "not slow and not gpu and not integration"
+.venv/bin/pytest --cov=app --cov=indexing --cov-report=term-missing -m "not slow and not gpu and not integration"
 
 # Lint + format
-ruff check . && ruff format --check .
+.venv/bin/ruff check . && .venv/bin/ruff format --check .
 
 # Types
-mypy app/ --ignore-missing-imports
+.venv/bin/mypy app/ --ignore-missing-imports
 
-# Serveur local
-uvicorn app.server:app --reload --port 8000
+# Serveur local (charger les clés API avant)
+set -a && source ~/GILLES\ AI/API_KEYS.env && set +a
+.venv/bin/uvicorn app.server:app --reload --port 8000
 ```
 
 ## Pièges connus
@@ -72,7 +75,7 @@ uvicorn app.server:app --reload --port 8000
 
 8. **Indexation GPU-only** : `indexing/index_documents.py` nécessite un GPU (ColQwen2). Marqué `@pytest.mark.gpu`. Le snapshot Qdrant est dans `data/qdrant/` (non versionné, 3.2 Go).
 
-9. **Qdrant nécessite Docker** : les données dans `data/qdrant/` sont au format natif du serveur Qdrant Rust. Le mode `embedded` (qdrant-client Python local) **ne peut pas** lire ce format. Toujours lancer le serveur Docker avant l'API ou l'évaluation : `docker run -d -p 6333:6333 -v ./data/qdrant:/qdrant/storage qdrant/qdrant`
+9. **Qdrant nécessite Docker** : les données ont été migrées vers le serveur Docker Qdrant. Toujours lancer le container avant l'API : `docker start qdrant`. Le mode `embedded` ne passe pas à l'échelle (5 GB en RAM → freeze).
 
 10. **ColQwen2 en bfloat16** : le modèle est toujours chargé en bfloat16 (~3.7 Go). Sur WSL avec 12 Go, ça passe mais c'est serré avec Docker Qdrant en parallèle.
 
@@ -91,9 +94,6 @@ uvicorn app.server:app --reload --port 8000
 Infrastructure dans `evaluation/` :
 
 ```bash
-# Bootstrap ground truth (nécessite Qdrant + ColQwen2)
-python -m evaluation.bootstrap_ground_truth
-
 # Évaluation complète
 python -m evaluation.evaluate --ground-truth evaluation/ground_truth.json
 
@@ -106,15 +106,24 @@ python -m evaluation.evaluate --skip-verification
 
 Résultats dans `evaluation/results/` (gitignored).
 
+### Ground truth (`evaluation/ground_truth.json`)
+
+- 50 questions, 48 avec réponse, 2 abstentions (q47, q50)
+- **Non-circulaire** : les `source_pages` ont été extraites en lisant directement les PDFs (pas le retriever)
+- `source_pages` limitées à 1-3 pages par question (recall mesuré rigoureusement)
+- q23 (cours action SocGen) et q39 (prix Brent) reclassées de `abstention` vers `chiffre_exact` (données trouvées dans les PDFs)
+- `source_document` correspond aux noms de fichiers dans Qdrant (ex : `LVMH_DEU_2024.pdf`)
+- Page numbers = physical PDF pages (1-indexed), matching `page_number` in Qdrant
+
 ## État actuel
 
-- 211 tests, 83% coverage
+- 225 tests, 83% coverage
 - P0 (indexation) et P1 (tests coeur métier) terminés
-- P2 (évaluation ground truth) terminé — baseline : recall@1=34%, recall@5=54%, citation=52%
+- P2 (ground truth) reconstruit non-circulairement — baseline à re-mesurer avec le nouveau GT
 - P3 (frontend) pas commencé
 - P4 (durcissement) partiel : rate limiting et CORS OK, manque auth/circuit breaker/audit trail
 
-### Baseline P2 (skip-verification, 50 questions)
+### Baseline P2 (ancien GT circulaire, obsolète)
 
 | Métrique | Valeur |
 |---|---|
@@ -124,3 +133,5 @@ Résultats dans `evaluation/results/` (gitignored).
 | Citation accuracy | 52% |
 | Abstention recall | 75% |
 | Coût/query | $0.029 |
+
+> Ces chiffres sont basés sur l'ancien GT (circulaire, 5 pages/question). Avec le nouveau GT (1-3 pages, non-circulaire), les scores seront différents. Re-lancer l'évaluation pour obtenir la nouvelle baseline.

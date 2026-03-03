@@ -41,7 +41,7 @@
   },
   {
     "id": "q06",
-    "question": "Quel est le chiffre d'affaires total (total net sales) d'Apple pour l'exercice fiscal 2024 ?",
+    "question": "Quel est le chiffre d'affaires consolidé de L'Oréal en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "",
     "source_pages": [],
@@ -49,7 +49,7 @@
   },
   {
     "id": "q07",
-    "question": "Comment ont évolué les revenus d'Apple dans la catégorie Services entre 2023 et 2024 ?",
+    "question": "Comment ont évolué les ventes de L'Oréal par division (L'Oréal Luxe, Produits Grand Public, Dermatological Beauty, Produits Professionnels) entre 2023 et 2024 ?",
     "category": "tendance",
     "source_document": "",
     "source_pages": [],
@@ -57,7 +57,7 @@
   },
   {
     "id": "q08",
-    "question": "Quel est le bénéfice net (net income) d'Apple pour l'exercice fiscal 2024 ?",
+    "question": "Quel est le résultat net part du groupe de L'Oréal en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "",
     "source_pages": [],
@@ -65,7 +65,7 @@
   },
   {
     "id": "q09",
-    "question": "Quelle est la répartition des revenus d'Apple par segment géographique ?",
+    "question": "Quelle est la répartition géographique du chiffre d'affaires de L'Oréal ?",
     "category": "tableau",
     "source_document": "",
     "source_pages": [],
@@ -73,7 +73,7 @@
   },
   {
     "id": "q10",
-    "question": "Comment se comparent les marges brutes d'Apple entre les produits et les services ?",
+    "question": "Comment se comparent les résultats opérationnels des différentes divisions de L'Oréal ?",
     "category": "comparaison",
     "source_document": "",
     "source_pages": [],
@@ -161,7 +161,7 @@
   },
   {
     "id": "q21",
-    "question": "Quel est le chiffre d'affaires total (total net revenue) de JPMorgan Chase en 2024 ?",
+    "question": "Quel est le produit net bancaire (PNB) de Société Générale en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "",
     "source_pages": [],
@@ -169,7 +169,7 @@
   },
   {
     "id": "q22",
-    "question": "Comment a évolué le résultat net de JPMorgan entre 2023 et 2024 ?",
+    "question": "Comment a évolué le résultat net de Société Générale entre 2023 et 2024 ?",
     "category": "tendance",
     "source_document": "",
     "source_pages": [],
@@ -177,7 +177,7 @@
   },
   {
     "id": "q23",
-    "question": "Quel est le cours de l'action JPMorgan au 31 décembre 2024 ?",
+    "question": "Quel est le cours de l'action Société Générale au 31 décembre 2024 ?",
     "category": "abstention",
     "source_document": "",
     "source_pages": [],
@@ -185,7 +185,7 @@
   },
   {
     "id": "q24",
-    "question": "Quels sont les résultats comparés des divisions Consumer & Community Banking et Corporate & Investment Bank de JPMorgan ?",
+    "question": "Quels sont les résultats comparés des pôles Banque de détail en France, Banque de Grande Clientèle et Solutions Investisseurs, et Boursorama de Société Générale ?",
     "category": "comparaison",
     "source_document": "",
     "source_pages": [],
@@ -193,7 +193,7 @@
   },
   {
     "id": "q25",
-    "question": "Comment a évolué le portefeuille de prêts de JPMorgan sur les 3 dernières années ?",
+    "question": "Comment a évolué le ratio CET1 de Société Générale sur les 3 dernières années ?",
     "category": "graphique",
     "source_document": "",
     "source_pages": [],
@@ -201,7 +201,7 @@
   },
   {
     "id": "q26",
-    "question": "Quel est le chiffre d'affaires total de Pfizer en 2024 ?",
+    "question": "Quel est le chiffre d'affaires total de Sanofi en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "",
     "source_pages": [],
@@ -209,7 +209,7 @@
   },
   {
     "id": "q27",
-    "question": "Comment ont évolué les revenus de Pfizer liés au COVID (Paxlovid, Comirnaty) entre 2023 et 2024 ?",
+    "question": "Comment ont évolué les ventes de Dupixent (dupilumab) de Sanofi entre 2023 et 2024 ?",
     "category": "tendance",
     "source_document": "",
     "source_pages": [],
@@ -217,7 +217,7 @@
   },
   {
     "id": "q28",
-    "question": "Quel est le montant des dépenses de R&D de Pfizer en 2024 ?",
+    "question": "Quel est le montant des dépenses de recherche et développement de Sanofi en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "",
     "source_pages": [],
@@ -225,7 +225,7 @@
   },
   {
     "id": "q29",
-    "question": "Comment se comparent les revenus de Pfizer entre les États-Unis et l'international ?",
+    "question": "Comment se comparent les revenus de Sanofi entre les États-Unis, l'Europe et le reste du monde ?",
     "category": "comparaison",
     "source_document": "",
     "source_pages": [],
@@ -233,7 +233,7 @@
   },
   {
     "id": "q30",
-    "question": "Quelle est l'évolution du pipeline de médicaments de Pfizer en phases cliniques ?",
+    "question": "Quelle est l'évolution du pipeline de médicaments de Sanofi en phases cliniques ?",
     "category": "graphique",
     "source_document": "",
     "source_pages": [],
@@ -241,7 +241,7 @@
   },
   {
     "id": "q31",
-    "question": "Quel est le chiffre d'affaires total (total revenues) de Tesla en 2024 ?",
+    "question": "Quel est le chiffre d'affaires total de Carrefour en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "",
     "source_pages": [],
@@ -249,7 +249,7 @@
   },
   {
     "id": "q32",
-    "question": "Comment a évolué la marge brute de Tesla entre 2023 et 2024 ?",
+    "question": "Comment a évolué la marge opérationnelle de Carrefour entre 2023 et 2024 ?",
     "category": "tendance",
     "source_document": "",
     "source_pages": [],
@@ -257,7 +257,7 @@
   },
   {
     "id": "q33",
-    "question": "Combien de véhicules Tesla a-t-il livrés en 2024 ?",
+    "question": "Combien de magasins Carrefour exploite-t-il dans le monde fin 2024 ?",
     "category": "chiffre_exact",
     "source_document": "",
     "source_pages": [],
@@ -265,7 +265,7 @@
   },
   {
     "id": "q34",
-    "question": "Comment se comparent les revenus de Tesla entre le segment Automotive et le segment Energy Generation and Storage ?",
+    "question": "Comment se comparent les performances de Carrefour entre la France, l'Europe (hors France) et l'Amérique latine ?",
     "category": "comparaison",
     "source_document": "",
     "source_pages": [],
@@ -273,7 +273,7 @@
   },
   {
     "id": "q35",
-    "question": "Quelle est l'évolution trimestrielle des livraisons de véhicules Tesla au cours de l'année 2024 ?",
+    "question": "Quelle est l'évolution des ventes e-commerce de Carrefour au cours des dernières années ?",
     "category": "graphique",
     "source_document": "",
     "source_pages": [],
@@ -321,7 +321,7 @@
   },
   {
     "id": "q41",
-    "question": "Quel est le chiffre d'affaires total (total revenues) de Walmart pour l'exercice fiscal 2025 ?",
+    "question": "Quel est le chiffre d'affaires consolidé de Schneider Electric en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "",
     "source_pages": [],
@@ -329,7 +329,7 @@
   },
   {
     "id": "q42",
-    "question": "Comment ont évolué les ventes e-commerce de Walmart entre 2023 et 2024 ?",
+    "question": "Comment a évolué la croissance organique de Schneider Electric entre 2023 et 2024 ?",
     "category": "tendance",
     "source_document": "",
     "source_pages": [],
@@ -337,7 +337,7 @@
   },
   {
     "id": "q43",
-    "question": "Comment se comparent les résultats opérationnels de Walmart US et Walmart International ?",
+    "question": "Comment se comparent les performances des divisions Energy Management et Industrial Automation de Schneider Electric ?",
     "category": "comparaison",
     "source_document": "",
     "source_pages": [],
@@ -345,7 +345,7 @@
   },
   {
     "id": "q44",
-    "question": "Quelle est la répartition des ventes de Walmart par segment (Walmart US, Walmart International, Sam's Club) ?",
+    "question": "Quelle est la répartition géographique du chiffre d'affaires de Schneider Electric ?",
     "category": "tableau",
     "source_document": "",
     "source_pages": [],
@@ -353,7 +353,7 @@
   },
   {
     "id": "q45",
-    "question": "Quelle est l'évolution du nombre de magasins Walmart dans le monde ?",
+    "question": "Quelle est l'évolution de la marge d'EBITA ajusté de Schneider Electric sur les dernières années ?",
     "category": "graphique",
     "source_document": "",
     "source_pages": [],

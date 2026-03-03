@@ -3,633 +3,369 @@
     "id": "q01",
     "question": "Quel est le chiffre d'affaires consolidé de LVMH en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
-    "source_pages": [
-      114,
-      338,
-      366,
-      396,
-      432
-    ],
-    "expected_answer": "# Réponse\n\nSelon les documents fournis, le **chiffre d'affaires consolidé de LVMH en 2024** est de :\n\n## **84 683 millions d'euros**\n\nCe chiffre est mentionné dans le tableau de la page 114 sous la ligne \"Chiffre d'affaires publié\" pour l'année 2024.\n\nÀ titre de comparaison, le chiffre d'affaires publié en 2019 était de 53 670 millions d'euros, ce qui représente une progression significative de 50% entre 2019 et 2024 (comme mentionné dans le texte accompagnant le tableau)."
+    "source_document": "LVMH_DEU_2024.pdf",
+    "source_pages": [4, 332],
+    "expected_answer": "CA consolidé LVMH 2024 : 84 683 M€, en baisse de 2 % vs 2023 (86 153 M€), +1 % en organique (p.4, p.332)."
   },
   {
     "id": "q02",
     "question": "Quel est le résultat opérationnel courant de LVMH en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
-    "source_pages": [
-      327,
-      338,
-      412,
-      416,
-      451
-    ],
-    "expected_answer": "# Résultat opérationnel courant de LVMH en 2024\n\nSelon le compte de résultat présenté dans le document, **le résultat courant avant impôt de LVMH en 2024 s'élève à 9 185,0 millions d'euros**.\n\nPour information comparative :\n- **2024** : 9 185,0 millions d'euros\n- **2023** : 9 386,6 millions d'euros\n\nCela représente une baisse de 201,6 millions d'euros par rapport à l'exercice précédent."
+    "source_document": "LVMH_DEU_2024.pdf",
+    "source_pages": [4, 332],
+    "expected_answer": "Résultat opérationnel courant LVMH 2024 : 19 571 M€, en baisse de 14 % vs 2023 (22 802 M€), marge de 23,1 % (p.4, p.332)."
   },
   {
     "id": "q03",
     "question": "Comment ont évolué les ventes de LVMH par zone géographique entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
-    "source_pages": [
-      4,
-      14,
-      114,
-      316,
-      317
-    ],
-    "expected_answer": "# Évolution des ventes de LVMH par zone géographique entre 2023 et 2024\n\nSelon les données du document, voici la répartition des ventes par zone géographique de destination :\n\n## Ventes 2024 par zone :\n- **France** : 8%\n- **Europe (hors France)** : 17%\n- **États-Unis** : 25%\n- **Japon** : 9%\n- **Asie (hors Japon)** : 28%\n- **Autres marchés** : 13%\n\n## Ventes 2023 par zone :\n- **France** : 7%\n- **Europe (hors France)** : 20%\n- **États-Unis** : 32%\n- **Japon** : 6%\n- **Asie (hors Japon)** : 21%\n- **Autres marchés** : 14%\n\n## Principales évolutions :\n- **États-Unis** : forte baisse de 32% à 25% (-7 points)\n- **Asie (hors Japon)** : forte hausse de 21% à 28% (+7 points)\n- **Japon** : hausse de 6% à 9% (+3 points)\n- **Europe (hors France)** : baisse de 20% à 17% (-3 points)\n- **France** : légère hausse de 7% à 8% (+1 point)\n- **Autres marchés** : légère baisse de 14% à 13% (-1 point)\n\n**Note** : Les ventes totales du groupe sont passées de 86 153 millions d'euros en 2023 à 84 683 millions d'euros en 2024, soit une baisse de -2% en publié."
+    "source_document": "LVMH_DEU_2024.pdf",
+    "source_pages": [316, 384],
+    "expected_answer": "Entre 2023 et 2024 : Japon +2 pts (7→9 %), Autres marchés +1 pt (12→13 %), France/Europe/USA stables, Asie hors Japon -3 pts (31→28 %). En valeur : France 7 009 M€, Europe hors France 14 538 M€, USA 21 554 M€, Japon 7 475 M€, Asie hors Japon 23 246 M€, Autres 10 861 M€ (p.316, p.384)."
   },
   {
     "id": "q04",
     "question": "Quelle est la répartition du chiffre d'affaires de LVMH par groupe d'activités ?",
     "category": "tableau",
-    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
-    "source_pages": [
-      15,
-      16,
-      21,
-      62,
-      114
-    ],
-    "expected_answer": "# Répartition du chiffre d'affaires de LVMH par groupe d'activités\n\nD'après les documents fournis, voici la répartition du chiffre d'affaires de LVMH par groupe d'activités en 2024 :\n\n## Chiffres identifiés :\n\n1. **Mode et Maroquinerie** : **48%** des ventes totales de LVMH\n   *(Source : Page 15 - \"En 2024, les ventes du groupe d'activités Mode et Maroquinerie ont représenté 48% des ventes totales de LVMH.\")*\n\n2. **Montres et Joaillerie** : **12%** des ventes totales de LVMH\n   *(Source : Page 21 - \"En 2024, les ventes du groupe d'activités Montres et Joaillerie ont représenté 12% des ventes totales de LVMH.\")*\n\n## Résumé :\n\n| Groupe d'activités | Part du CA 2024 |\n|-------------------|-----------------|\n| Mode et Maroquinerie | 48% |\n| Montres et Joaillerie | 12% |\n| **Autres groupes** | **40%** (non détaillé dans les pages fournies) |\n\n**Note** : Les pages fournies ne mentionnent pas explicitement la répartition pour les autres groupes d'activités de LVMH (Vins et Spiritueux, Parfums et Cosmétiques, Distribution sélective), qui représentent les 40% restants."
+    "source_document": "LVMH_DEU_2024.pdf",
+    "source_pages": [4, 316],
+    "expected_answer": "CA 2024 par activité : Mode et Maroquinerie 41 060 M€ (48 %), Distribution sélective 18 262 M€ (22 %), Montres et Joaillerie 10 577 M€ (12 %), Parfums et Cosmétiques 8 418 M€ (10 %), Vins et Spiritueux 5 862 M€ (7 %) (p.4, p.316)."
   },
   {
     "id": "q05",
     "question": "Quel est le montant du dividende par action proposé par LVMH pour l'exercice 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "20250325_Document_d_enregistrement_universel_2024_LVMH.pdf",
-    "source_pages": [
-      323,
-      329,
-      366,
-      416,
-      467
-    ],
-    "expected_answer": "# Réponse\n\nSelon les documents fournis, **le montant du dividende par action proposé par LVMH pour l'exercice 2024 est de 13,00 euros**.\n\n## Détails de la distribution :\n\n- **Dividende total par action : 13,00 euros**\n- **Acompte déjà versé en décembre 2024 : 5,50 euros**\n- **Solde restant à distribuer en avril 2025 : 7,50 euros**\n\nCette proposition représente un montant total de distribution d'environ **6,5 milliards d'euros** au titre de l'année 2024, et sera soumise à l'approbation de l'Assemblée Générale du 17 avril 2025."
+    "source_document": "LVMH_DEU_2024.pdf",
+    "source_pages": [5, 323],
+    "expected_answer": "Dividende proposé pour 2024 : 13,00 € par action (stable vs 2023), dont acompte de 5,50 € versé en décembre 2024 et solde de 7,50 € en avril 2025 (p.5, p.323)."
   },
   {
     "id": "q06",
-    "question": "Quel est le chiffre d'affaires total (total net sales) d'Apple pour l'exercice fiscal 2024 ?",
+    "question": "Quel est le chiffre d'affaires consolidé de L'Oréal en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
-    "source_pages": [
-      25,
-      26,
-      27,
-      32,
-      38
-    ],
-    "expected_answer": "Selon les documents fournis, **le chiffre d'affaires total (total net sales) d'Apple pour l'exercice fiscal 2024 est de 391 035 millions de dollars**, soit **391,035 milliards de dollars**.\n\nCe chiffre apparaît dans les deux tableaux présentés :\n- Page 25 : dans le tableau \"Segment Operating Performance\"\n- Page 26 : dans le tableau \"Products and Services Performance\"\n\nCela représente une augmentation de 2% par rapport à 2023 (383 285 millions de dollars)."
+    "source_document": "LOreal_DEU_2024.pdf",
+    "source_pages": [38, 286],
+    "expected_answer": "CA consolidé L'Oréal 2024 : 43 486,8 M€, +5,6 % en publié et +5,1 % en comparable vs 2023 (41 182,5 M€) (p.38, p.286)."
   },
   {
     "id": "q07",
-    "question": "Comment ont évolué les revenus d'Apple dans la catégorie Services entre 2023 et 2024 ?",
+    "question": "Comment ont évolué les ventes de L'Oréal par division (L'Oréal Luxe, Produits Grand Public, Dermatological Beauty, Produits Professionnels) entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
-    "source_pages": [
-      25,
-      26,
-      27,
-      32,
-      38
-    ],
-    "expected_answer": "# Évolution des revenus d'Apple dans la catégorie Services entre 2023 et 2024\n\nSelon les documents fournis, voici les chiffres précis concernant les revenus Services d'Apple :\n\n## Chiffres clés :\n\n**2024 :** 96 169 millions de dollars\n**2023 :** 85 200 millions de dollars\n\n**Évolution :** +13% (soit une augmentation de 10 969 millions de dollars)\n\n## Détails supplémentaires :\n\nCette croissance de 13% des revenus Services s'explique principalement par :\n- Des ventes nettes plus élevées provenant de la publicité\n- L'App Store®\n- Les services cloud\n\nLes Services représentent une part importante et croissante de l'activité d'Apple, avec une marge brute qui est passée de 60 345 millions de dollars en 2023 à 71 050 millions de dollars en 2024, soit une marge brute de 73,9% en 2024 contre 70,8% en 2023."
+    "source_document": "LOreal_DEU_2024.pdf",
+    "source_pages": [39],
+    "expected_answer": "Croissance comparable 2024 par division : Beauté Dermatologique +9,8 % (7 027,1 M€), Produits Grand Public +5,4 % (15 982,4 M€), Produits Professionnels +5,3 % (4 886,2 M€), L'Oréal Luxe +2,7 % (15 591,1 M€) (p.39)."
   },
   {
     "id": "q08",
-    "question": "Quel est le bénéfice net (net income) d'Apple pour l'exercice fiscal 2024 ?",
+    "question": "Quel est le résultat net part du groupe de L'Oréal en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
-    "source_pages": [
-      32,
-      33,
-      35,
-      37,
-      39
-    ],
-    "expected_answer": "Selon le document \"Consolidated Statements of Operations\" d'Apple Inc., le **bénéfice net (Net income) pour l'exercice fiscal 2024** (année terminée le 28 septembre 2024) est de :\n\n**93 736 millions de dollars** (soit environ 93,7 milliards de dollars)\n\nCe chiffre apparaît clairement dans le compte de résultat consolidé à la page 32 du document."
+    "source_document": "LOreal_DEU_2024.pdf",
+    "source_pages": [42, 286],
+    "expected_answer": "Résultat net part du groupe L'Oréal 2024 : 6 408,7 M€, +3,6 % vs 2023 (6 184,0 M€). Hors éléments non récurrents : 6 786,3 M€ (+4,6 %) (p.42, p.286)."
   },
   {
     "id": "q09",
-    "question": "Quelle est la répartition des revenus d'Apple par segment géographique ?",
+    "question": "Quelle est la répartition géographique du chiffre d'affaires de L'Oréal ?",
     "category": "tableau",
-    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
-    "source_pages": [
-      5,
-      25,
-      39,
-      49,
-      50
-    ],
-    "expected_answer": "# Répartition des revenus d'Apple par segment géographique\n\nSelon les données du document (Form 10-K 2024), voici la répartition des revenus nets d'Apple par segment géographique :\n\n## Année 2024\n\n| Segment géographique | Revenus (en millions $) | Variation vs 2023 |\n|---------------------|------------------------|-------------------|\n| **Americas** | 167 045 $ | +3% |\n| **Europe** | 101 328 $ | +7% |\n| **Greater China** | 66 952 $ | -8% |\n| **Japan** | 25 052 $ | +3% |\n| **Rest of Asia Pacific** | 30 658 $ | +4% |\n| **Total** | **391 035 $** | **+2%** |\n\n## Comparaison sur 3 ans\n\n| Segment | 2024 | 2023 | 2022 |\n|---------|------|------|------|\n| Americas | 167 045 $ | 162 560 $ | 169 658 $ |\n| Europe | 101 328 $ | 94 294 $ | 95 118 $ |\n| Greater China | 66 952 $ | 72 559 $ | 74 200 $ |\n| Japan | 25 052 $ | 24 257 $ | 25 977 $ |\n| Rest of Asia Pacific | 30 658 $ | 29 615 $ | 29 375 $ |\n\n**Points clés :**\n- Les Americas représentent le plus grand segment avec 42,7% des revenus totaux\n- L'Europe est en croissance (+7%)\n- La Grande Chine a connu une baisse significative (-8%)"
+    "source_document": "LOreal_DEU_2024.pdf",
+    "source_pages": [39],
+    "expected_answer": "CA 2024 par zone : Europe 14 211,4 M€ (32,7 %), Amérique du Nord 11 805,2 M€ (27,1 %), Asie du Nord 10 303,4 M€ (23,7 %), SAPMENA-SSA 3 863,0 M€ (8,9 %), Amérique Latine 3 303,9 M€ (7,6 %) (p.39)."
   },
   {
     "id": "q10",
-    "question": "Comment se comparent les marges brutes d'Apple entre les produits et les services ?",
+    "question": "Comment se comparent les résultats opérationnels des différentes divisions de L'Oréal ?",
     "category": "comparaison",
-    "source_document": "c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
-    "source_pages": [
-      4,
-      18,
-      26,
-      27,
-      32
-    ],
-    "expected_answer": "D'après les documents fournis, je peux voir des informations sur les ventes nettes par catégorie (page 26), mais **les chiffres spécifiques concernant les marges brutes des produits et des services ne sont pas présents dans les pages fournies**.\n\nLa page 18 mentionne que :\n- \"Les marges brutes de l'entreprise varient considérablement entre ses produits et services\"\n- \"Les marges brutes sur les produits et services de l'entreprise varient de manière significative et peuvent changer au fil du temps\"\n\nCependant, **aucun pourcentage ou chiffre précis de marge brute n'est indiqué** dans ces extraits.\n\nPour répondre précisément à votre question avec les chiffres exacts des marges brutes (en pourcentage) pour les produits versus les services, il faudrait avoir accès à d'autres pages du Form 10-K, probablement dans la section des états financiers consolidés ou dans l'analyse de la direction (MD&A)."
+    "source_document": "LOreal_DEU_2024.pdf",
+    "source_pages": [44],
+    "expected_answer": "Résultat d'exploitation 2024 par division : Beauté Dermatologique 1 832,7 M€ (marge 26,1 %), L'Oréal Luxe 3 469,7 M€ (22,3 %), Produits Professionnels 1 086,2 M€ (22,2 %), Produits Grand Public 3 376,4 M€ (21,1 %). Total : 9 765,0 M€ (22,5 %) (p.44)."
   },
   {
     "id": "q11",
     "question": "Quel est le produit net bancaire (PNB) de BNP Paribas en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
-    "source_pages": [
-      144,
-      152,
-      176,
-      638,
-      691
-    ],
-    "expected_answer": "# Produit Net Bancaire (PNB) de BNP Paribas en 2024\n\nSelon les documents fournis, le **Produit Net Bancaire (PNB) de BNP Paribas en 2024 s'élève à 48 831 millions d'euros**.\n\n## Détails complémentaires :\n\n- **Évolution** : +4,1 % par rapport à 2023 sur base distribuable\n- **Comparaison** : \n  - 2024 : 48 831 millions d'euros\n  - 2023 distribuable : 46 927 millions d'euros\n  - 2023 : 45 874 millions d'euros\n\nCette information figure dans le tableau des résultats consolidés de BNP Paribas pour l'année 2024 (page 142 du document)."
+    "source_document": "BNP_Paribas_DEU_2024.pdf",
+    "source_pages": [7, 144],
+    "expected_answer": "PNB BNP Paribas 2024 : 48 831 M€, +4,1 % vs 2023 (46 927 M€ sur base distribuable) (p.7, p.144)."
   },
   {
     "id": "q12",
     "question": "Comment a évolué le coût du risque de BNP Paribas entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
-    "source_pages": [
-      144,
-      145,
-      170,
-      184,
-      228
-    ],
-    "expected_answer": "# Évolution du coût du risque de BNP Paribas entre 2023 et 2024\n\nSelon les documents fournis, voici l'évolution du coût du risque de BNP Paribas :\n\n## Chiffres consolidés\n\n**2024 :** 2 999 millions d'euros\n**2023 :** 2 907 millions d'euros (base distribuable)\n\n**Évolution :** +3,2% (+92 millions d'euros)\n\n## Niveau du coût du risque\n\nLe coût du risque reste à un **niveau bas de 33 points de base** en 2024.\n\n## Objectif 2024\n\nL'objectif fixé pour 2024 était un coût du risque de **33 pb (points de base), avec un objectif inférieur à 40 pb**, ce qui a été atteint.\n\nLe coût du risque a donc légèrement augmenté entre 2023 et 2024 (+3,2%), mais reste contenu à un niveau historiquement bas, conforme aux objectifs du Groupe."
+    "source_document": "BNP_Paribas_DEU_2024.pdf",
+    "source_pages": [144, 162],
+    "expected_answer": "Coût du risque BNP Paribas : 2 999 M€ en 2024 vs 2 907 M€ en 2023 (+3,2 %), niveau bas de 33 pb. Hausse sur encours dépréciés (+340 M€) partiellement compensée par baisse sur encours sains (-248 M€) (p.144, p.162)."
   },
   {
     "id": "q13",
     "question": "Quel est le ratio CET1 (Common Equity Tier 1) de BNP Paribas fin 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
-    "source_pages": [
-      122,
-      172,
-      337,
-      348,
-      387
-    ],
-    "expected_answer": "# Réponse\n\nSelon les documents fournis, **le ratio CET1 (Common Equity Tier 1) de BNP Paribas fin 2024 s'élève à 12,9%** au 31 décembre 2024.\n\n## Détails complémentaires :\n\n- Ce ratio est **en hausse de 20 points de base** par rapport au 30 septembre 2024 (qui était à 12,7%)\n- Il est également **supérieur aux exigences SREP** (10,33%)\n\nCette progression résulte de plusieurs effets combinés :\n1. La génération organique de capital nette de l'évolution des actifs pondérés (+30 points de base)\n2. La distribution du résultat du 4T24 (-20 points de base)\n3. Le programme de titrisation et d'assurance crédit (+10 points de base)\n\nLe ratio CET1 de 12,9% au 31 décembre 2024 est également **en baisse de 30 points de base** par rapport au 31 décembre 2023 (qui était à 13,2%)."
+    "source_document": "BNP_Paribas_DEU_2024.pdf",
+    "source_pages": [172, 379],
+    "expected_answer": "Ratio CET1 BNP Paribas au 31/12/2024 : 12,9 % (12,87 % précisément), en baisse de 30 pb vs 31/12/2023 (13,2 %), supérieur à l'exigence SREP de 10,33 % (p.172, p.379)."
   },
   {
     "id": "q14",
     "question": "Quels sont les résultats comparés des pôles Corporate & Institutional Banking et Commercial Banking de BNP Paribas ?",
     "category": "comparaison",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
-    "source_pages": [
-      5,
-      143,
-      147,
-      176,
-      233
-    ],
-    "expected_answer": "# Comparaison des résultats Corporate & Institutional Banking vs Commercial Banking\n\nVoici les résultats comparés des deux pôles de BNP Paribas pour 2024 :\n\n## **Corporate and Institutional Banking (CIB)**\n\n- **Produit net bancaire** : 17 897 millions d'euros (+8,4% vs 2023)\n- **Frais de gestion** : (10 731) millions d'euros\n- **Résultat brut d'exploitation** : 7 166 millions d'euros (+14,8%)\n- **Résultat d'exploitation** : 7 310 millions d'euros (+15,9%)\n- **Résultat avant impôt** : 7 323 millions d'euros (+16,2%)\n- **Coefficient d'exploitation** : 60,0%\n- **Fonds propres alloués** : 30,6 milliards d'euros\n\n### Dont Global Banking :\n- **Produit net bancaire** : 6 236 millions d'euros (+7,1%)\n- **Résultat brut d'exploitation** : 3 315 millions d'euros (+9,8%)\n- **Résultat d'exploitation** : 3 486 millions d'euros (+12,7%)\n- **Résultat avant impôt** : 3 492 millions d'euros (+12,7%)\n- **Coefficient d'exploitation** : 46,8%\n\n## **Commercial Banking**\n\nLes données détaillées pour le pôle Commercial Banking ne sont pas visibles dans les pages fournies. Le document indique que ces informations se trouvent à la page 147, mais cette page n'est pas incluse dans les extraits fournis."
+    "source_document": "BNP_Paribas_DEU_2024.pdf",
+    "source_pages": [147, 149],
+    "expected_answer": "CIB : PNB 17 897 M€ (+8,4 %), résultat avant impôt 7 323 M€ (+16,2 %). CPBS : PNB 26 751 M€ (+0,5 %), résultat avant impôt 6 791 M€ (-7,4 %). CIB surperforme grâce à Global Markets (+9,0 %) et Global Banking (+7,1 %) (p.147, p.149)."
   },
   {
     "id": "q15",
     "question": "Quelle est la contribution de chaque pôle d'activité au résultat net de BNP Paribas ?",
     "category": "tableau",
-    "source_document": "20250320_Document_d_enregistrement_universel_2024_BNP_Paribas.pdf",
-    "source_pages": [
-      5,
-      143,
-      147,
-      176,
-      233
-    ],
-    "expected_answer": "# Contribution de chaque pôle d'activité au résultat net de BNP Paribas\n\nD'après les documents fournis, voici la contribution de chaque pôle d'activité au résultat avant impôt pour l'année 2024 :\n\n## **1. Corporate and Institutional Banking (CIB)**\n- **Résultat avant impôt : 7 323 millions d'euros**\n- Évolution : +16,2% vs 2023\n\nCe pôle comprend notamment :\n- **Global Banking** : 3 492 millions d'euros de résultat avant impôt (+12,7%)\n\n## **2. Commercial, Personal Banking & Services (CPBS)**\nLes données détaillées sont mentionnées à la page 147 du document.\n\n## **3. Investment & Protection Services (IPS)**\nLes données détaillées sont mentionnées à la page 151 du document.\n\n## **4. Autres Activités**\nLes données détaillées sont mentionnées à la page 153 du document.\n\n---\n\n**Note :** Les pages sources fournies ne contiennent que les informations complètes pour le pôle CIB. Pour obtenir la contribution exacte de tous les pôles au résultat net consolidé du Groupe, il faudrait consulter les pages 147, 151 et 153 mentionnées dans le sommaire, ainsi que la page 144 qui présente la \"Distribution du résultat\"."
+    "source_document": "BNP_Paribas_DEU_2024.pdf",
+    "source_pages": [147, 149, 155],
+    "expected_answer": "Résultat avant impôt 2024 par pôle : CIB 7 323 M€ (45 %), CPBS 6 791 M€ (42 %), IPS 2 355 M€ (15 %), Autres Activités -294 M€. Résultat net part du Groupe : 11 688 M€ (p.147, p.149, p.155)."
   },
   {
     "id": "q16",
     "question": "Quel est le chiffre d'affaires net de Danone en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "deu2024accessibleversion.pdf",
-    "source_pages": [
-      57,
-      58,
-      62,
-      76,
-      144
-    ],
-    "expected_answer": "# Réponse\n\nSelon le document d'enregistrement universel 2024 de Danone, **le chiffre d'affaires net en 2024 s'élève à 27 376 millions d'euros**.\n\nCe chiffre représente :\n- Une variation de **(0,9)%** en données publiées par rapport à 2023 (27 619 millions d'euros)\n- Une variation de **+4,3%** en données comparables"
+    "source_document": "Danone_DEU_2024.pdf",
+    "source_pages": [5, 55],
+    "expected_answer": "CA net Danone 2024 : 27 376 M€, -0,9 % en publié mais +4,3 % en comparable vs 2023 (27 619 M€) (p.5, p.55)."
   },
   {
     "id": "q17",
     "question": "Comment a évolué la marge opérationnelle courante de Danone entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "deu2024accessibleversion.pdf",
-    "source_pages": [
-      5,
-      52,
-      57,
-      59,
-      60
-    ],
-    "expected_answer": "# Évolution de la marge opérationnelle courante de Danone entre 2023 et 2024\n\nSelon les documents fournis, la marge opérationnelle courante de Danone a évolué comme suit :\n\n## Chiffres clés :\n\n- **2023** : 12,6 %\n- **2024** : 13,0 %\n\n## Évolution :\n\nLa marge opérationnelle courante a **progressé de +39 points de base** (ou +0,4 point de pourcentage) entre 2023 et 2024, passant de 12,6 % à 13,0 %.\n\nCette amélioration s'inscrit dans une dynamique positive de la performance opérationnelle du groupe, avec un résultat opérationnel courant qui est passé de 3 481 millions d'euros en 2023 à 3 558 millions d'euros en 2024, soit une hausse de 2,2 % en données publiées."
+    "source_document": "Danone_DEU_2024.pdf",
+    "source_pages": [5, 57],
+    "expected_answer": "Marge opérationnelle courante Danone : 12,6 % en 2023 → 13,0 % en 2024 (+39 pb). ROC de 3 481 M€ à 3 558 M€ (+2,2 %) (p.5, p.57)."
   },
   {
     "id": "q18",
     "question": "Quelle est la croissance en données comparables (like-for-like) de Danone par catégorie de produits ?",
     "category": "comparaison",
-    "source_document": "deu2024accessibleversion.pdf",
-    "source_pages": [
-      5,
-      16,
-      58,
-      59,
-      418
-    ],
-    "expected_answer": "# Croissance en données comparables (like-for-like) de Danone par catégorie de produits\n\nSelon le document, voici la **croissance en données comparables par catégorie** pour l'exercice clos le 31 décembre 2024 :\n\n## Croissance globale\n- **+4,3%** : Croissance du chiffre d'affaires en données comparables (total Groupe)\n\n## Par catégorie de produits\n\nBien que le document présente la répartition du chiffre d'affaires par catégorie :\n- **EDP (Produits Laitiers et d'Origine Végétale)** : 49% du CA (13 463 millions €)\n- **Nutrition Spécialisée** : 33% du CA (8 936 millions €)\n- **Eaux** : 18% du CA (4 977 millions €)\n\nLe document ne fournit **pas explicitement** les taux de croissance en données comparables détaillés par catégorie de produits dans les pages présentées.\n\nSeule la croissance globale de **+4,3%** en données comparables est clairement indiquée, avec une décomposition montrant :\n- **+3,0%** de croissance Volume/Mix\n- **+1,3%** d'effet prix"
+    "source_document": "Danone_DEU_2024.pdf",
+    "source_pages": [57],
+    "expected_answer": "Croissance comparable 2024 par catégorie : EDP +3,8 % (volume/mix +2,7 %), Nutrition Spécialisée +4,6 % (volume/mix +3,4 %), Eaux +5,1 % (volume/mix +2,9 %). Total : +4,3 % (volume/mix +3,0 %) (p.57)."
   },
   {
     "id": "q19",
     "question": "Quel est le free cash flow de Danone en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "deu2024accessibleversion.pdf",
-    "source_pages": [
-      5,
-      52,
-      57,
-      63,
-      64
-    ],
-    "expected_answer": "# Free Cash Flow de Danone en 2024\n\nSelon les documents fournis, le **free cash flow de Danone en 2024 est de 3,0 milliards d'euros (3 003 millions d'euros)**.\n\n## Détails des chiffres :\n\n- **2024** : 3 003 millions d'euros\n- **2023** : 2 633 millions d'euros\n- **Variation** : +14,0 %\n\nCette information apparaît à plusieurs endroits dans le document :\n1. Dans les \"Chiffres clés 2024\" en page 3, où il est indiqué **3,0 Mds €**\n2. Dans le tableau détaillé \"Informations financières clés\" en page 3\n3. Dans la section \"Examen du résultat consolidé\" en page 57\n\nLe free cash flow a donc connu une croissance significative de 14% par rapport à l'exercice précédent."
+    "source_document": "Danone_DEU_2024.pdf",
+    "source_pages": [5, 61],
+    "expected_answer": "Free cash flow Danone 2024 : 3 003 M€, +14,0 % vs 2023 (2 633 M€) (p.5, p.61)."
   },
   {
     "id": "q20",
     "question": "Quelle est la répartition géographique du chiffre d'affaires de Danone ?",
     "category": "tableau",
-    "source_document": "deu2024accessibleversion.pdf",
-    "source_pages": [
-      16,
-      17,
-      58,
-      63,
-      96
-    ],
-    "expected_answer": "# Répartition géographique du chiffre d'affaires de Danone\n\nSelon les documents fournis, voici la répartition géographique du chiffre d'affaires de Danone pour l'exercice 2024 :\n\n## Par zone géographique (en millions d'euros et en %)\n\n**Chiffre d'affaires total : 27 376 millions d'euros**\n\n- **Europe** : 9 568 M€ (35% du CA)\n- **Amérique du Nord** : 6 579 M€ (24% du CA)\n- **Chine, Asie du Nord & Océanie** : 3 694 M€ (13% du CA)\n- **Amérique latine** : 3 029 M€ (11% du CA)\n- **Reste du Monde** : 4 506 M€ (16% du CA)\n\n## Top 10 des pays (en % du CA)\n\n1. **États-Unis** : 21%\n2. **Chine** : 11%\n3. **France** : 8%\n4. **Indonésie** : 6%\n5. **Royaume-Uni** : 6%\n6. **Mexique** : 5%\n7. **Espagne** : 4%\n8. **Allemagne** : 4%\n9. **Pologne** : 3%\n10. **Brésil** : 3%\n\nLes principaux marchés européens incluent la France, l'Espagne, l'Allemagne et le Royaume-Uni. En Amérique du Nord, les États-Unis et le Canada sont les principaux contributeurs. Le Reste du Monde couvre notamment l'Asie-Pacifique (Indonésie), l'Afrique et le Moyen-Orient (Turquie et Maroc étant les plus grands marchés)."
+    "source_document": "Danone_DEU_2024.pdf",
+    "source_pages": [56],
+    "expected_answer": "CA 2024 par zone : Europe 9 568 M€ (34,9 %), Amérique du Nord 6 579 M€ (24,0 %), Chine/Asie du Nord/Océanie 3 694 M€ (13,5 %), Amérique latine 3 029 M€ (11,1 %), Reste du Monde 4 506 M€ (16,5 %) (p.56)."
   },
   {
     "id": "q21",
-    "question": "Quel est le chiffre d'affaires total (total net revenue) de JPMorgan Chase en 2024 ?",
+    "question": "Quel est le produit net bancaire (PNB) de Société Générale en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "annualreport-2024.pdf",
-    "source_pages": [
-      5,
-      76,
-      93,
-      111,
-      206
-    ],
-    "expected_answer": "Selon le document, le chiffre d'affaires total (total net revenue) de JPMorgan Chase en 2024 est de **$180,6 milliards**.\n\nCette information est clairement indiquée dans le texte de la page 5 : \"We earned revenue in 2024 of $180.6 billion¹ and net income of $58.5 billion\".\n\nLe tableau de la page 93 confirme également ce chiffre avec le \"Total net revenue\" de **$177,556 millions** (soit environ $177,6 milliards), bien que le texte mentionne $180,6 milliards. Cette différence peut s'expliquer par le fait que le chiffre de $180,6 milliards représente le \"managed revenue\" (revenus gérés) comme indiqué par la note de bas de page, tandis que le tableau présente les revenus consolidés selon les normes comptables."
+    "source_document": "SocieteGenerale_DEU_2024.pdf",
+    "source_pages": [6, 30],
+    "expected_answer": "PNB Société Générale 2024 : 26 788 M€, +6,7 % vs 2023 (25 104 M€) (p.6, p.30)."
   },
   {
     "id": "q22",
-    "question": "Comment a évolué le résultat net de JPMorgan entre 2023 et 2024 ?",
+    "question": "Comment a évolué le résultat net de Société Générale entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "annualreport-2024.pdf",
-    "source_pages": [
-      2,
-      13,
-      75,
-      88,
-      331
-    ],
-    "expected_answer": "# Évolution du résultat net de JPMorgan entre 2023 et 2024\n\nSelon les données financières présentées dans le document :\n\n## Résultat net (Net income)\n- **2023** : 49 552 millions de dollars\n- **2024** : 58 471 millions de dollars\n\n## Évolution\nLe résultat net de JPMorgan a **augmenté de 8 919 millions de dollars**, soit une **hausse de 18%** entre 2023 et 2024.\n\nCette progression s'explique notamment par :\n- Une augmentation du revenu net total de 158 104 M$ à 177 556 M$\n- Une hausse du bénéfice avant provisions de 70 932 M$ à 85 759 M$\n- Malgré une augmentation des provisions pour pertes sur crédits de 9 320 M$ à 10 678 M$\n\nLe bénéfice par action de base est également passé de **16,25 $** en 2023 à **19,79 $** en 2024."
+    "source_document": "SocieteGenerale_DEU_2024.pdf",
+    "source_pages": [9, 30],
+    "expected_answer": "Résultat net part du Groupe : 2 493 M€ en 2023 → 4 200 M€ en 2024, +68,6 %. ROTE de 4,2 % à 6,9 % (p.9, p.30)."
   },
   {
     "id": "q23",
-    "question": "Quel est le cours de l'action JPMorgan au 31 décembre 2024 ?",
-    "category": "abstention",
-    "source_document": "",
-    "source_pages": [],
-    "expected_answer": "Cette question est hors du scope des documents disponibles."
+    "question": "Quel est le cours de l'action Société Générale au 31 décembre 2024 ?",
+    "category": "chiffre_exact",
+    "source_document": "SocieteGenerale_DEU_2024.pdf",
+    "source_pages": [658],
+    "expected_answer": "Cours de l'action Société Générale au 31/12/2024 : 27,16 €, +13,0 % sur l'année (p.658)."
   },
   {
     "id": "q24",
-    "question": "Quels sont les résultats comparés des divisions Consumer & Community Banking et Corporate & Investment Bank de JPMorgan ?",
+    "question": "Quels sont les résultats comparés des pôles Banque de détail en France, Banque de Grande Clientèle et Solutions Investisseurs, et Boursorama de Société Générale ?",
     "category": "comparaison",
-    "source_document": "annualreport-2024.pdf",
-    "source_pages": [
-      13,
-      70,
-      86,
-      104,
-      145
-    ],
-    "expected_answer": "# Comparaison des résultats des divisions Consumer & Community Banking et Corporate & Investment Bank de JPMorgan\n\nSelon les documents fournis, voici les résultats comparés de ces deux divisions pour l'année 2024 :\n\n## **Consumer & Community Banking (CCB)**\n\n### Efficacité et Rentabilité :\n- **Overhead ratio** : 53%\n- **ROTCE (Return on Tangible Common Equity)** : 32%\n- **Best-in-class peer ROTCE** : 25% (BAC-CB et BAC-CB GSIB)\n\n## **Commercial & Investment Bank (CIB)**\n\n### Résultats financiers 2024 :\n- **Revenu net** : 25 milliards de dollars (record)\n- **Revenus** : 70 milliards de dollars (nouveaux records)\n- **Rendement sur capitaux propres** : 18%\n\n### Efficacité et Rentabilité :\n- **Overhead ratio** : 50%\n- **ROTCE** : 18%\n- **Best-in-class peer ROTCE** : 15% (GS-GBM)\n\n### Performances spécifiques :\n- **Part de marché en frais globaux** : 9,3% (position #1)\n- **Classement en M&A** : #1\n- **Transactions M&A conseillées** : 395 transactions pour plus de 744 milliards de dollars\n- **Frais de conseil** : 3,3 milliards de dollars\n- **Part de marché en M&A** : 9,6%\n\n## **Synthèse comparative**\n\nLa division **CCB** affiche une rentabilité supérieure avec un ROTCE de **32%** contre **18%** pour la CIB, mais la **CIB** a généré des résultats records en termes absolus avec 25 milliards de dollars de revenu net et maintient une position de leader mondial dans plusieurs domaines clés."
+    "source_document": "SocieteGenerale_DEU_2024.pdf",
+    "source_pages": [32, 33, 36],
+    "expected_answer": "GBIS : PNB record 10 122 M€ (+5,0 %), RNPG 2 788 M€, RONE 18,4 %. Banque de détail France/BP/Assurances : PNB 8 657 M€ (+7,5 %), RNPG 991 M€, RONE 6,3 %. Mobilité/BDI/SF International : PNB 8 458 M€ (-0,6 %), RNPG 1 270 M€, RONE 12,2 %. BoursoBank : 7,2 M clients, contribution nette positive (p.32, p.33, p.36)."
   },
   {
     "id": "q25",
-    "question": "Comment a évolué le portefeuille de prêts de JPMorgan sur les 3 dernières années ?",
+    "question": "Comment a évolué le ratio CET1 de Société Générale sur les 3 dernières années ?",
     "category": "graphique",
-    "source_document": "annualreport-2024.pdf",
-    "source_pages": [
-      7,
-      47,
-      72,
-      74,
-      75
-    ],
-    "expected_answer": "# Évolution du portefeuille de prêts de JPMorgan sur les 3 dernières années\n\nD'après les documents fournis, je ne trouve pas de données chiffrées spécifiques sur l'évolution du **portefeuille de prêts** de JPMorgan sur les 3 dernières années.\n\n## Informations disponibles :\n\nLes documents mentionnent plutôt :\n\n1. **Revenus Banking and Payments** (page 72) :\n   - 2022 : 26,8 milliards $\n   - 2023 : 31,9 milliards $\n   - 2024 : 35,3 milliards $\n   - Croissance de +11% entre 2023 et 2024\n\n2. **Investissements en prêts directs** (page 72) :\n   - Plus de 10 milliards $ déployés en financements de prêts directs sur les 4 dernières années\n   - Engagement de 50 milliards $ du bilan de JPMorgan\n   - Près de 15 milliards $ de partenaires co-prêteurs\n\n3. **Programme de logement abordable** (page 47) :\n   - 20 milliards $ de prêts pour préserver plus de 190 000 unités de logements abordables\n\n**Note** : Les documents fournis ne contiennent pas de tableau détaillé montrant l'évolution totale du portefeuille de prêts (loans portfolio) sur les 3 dernières années. Pour obtenir cette information précise, il faudrait consulter les états financiers consolidés ou le bilan de la banque."
+    "source_document": "SocieteGenerale_DEU_2024.pdf",
+    "source_pages": [9, 166],
+    "expected_answer": "Ratio CET1 SocGen sur 3 ans : 13,5 % (2022), 13,1 % (2023), 13,3 % (2024). Remontée de +0,2 pt en 2024. Graphique des ratios de solvabilité p.166 (p.9, p.166)."
   },
   {
     "id": "q26",
-    "question": "Quel est le chiffre d'affaires total de Pfizer en 2024 ?",
+    "question": "Quel est le chiffre d'affaires total de Sanofi en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "10K_Final.pdf",
-    "source_pages": [
-      34,
-      57,
-      59,
-      60,
-      111
-    ],
-    "expected_answer": "Selon les documents fournis, **le chiffre d'affaires total de Pfizer en 2024 est de 63,6 milliards de dollars** (ou plus précisément 63 627 millions de dollars).\n\nCe chiffre est clairement indiqué dans plusieurs sections :\n\n1. Dans la section \"Financial Highlights\" (page 34) : **\"2024 Total Revenues—$63.6 billion\"** avec une augmentation de 7% par rapport à 2023\n\n2. Dans le \"Consolidated Statements of Operations\" (page 57) : Le total des revenus (\"Total revenues\") pour l'année 2024 s'élève à **63 627 millions de dollars**\n\nCe chiffre d'affaires se décompose en :\n- Revenus produits : 53 816 millions de dollars\n- Revenus d'alliances : 8 388 millions de dollars  \n- Revenus de royalties : 1 423 millions de dollars"
+    "source_document": "Sanofi_DEU_2024.pdf",
+    "source_pages": [6, 337],
+    "expected_answer": "CA total Sanofi 2024 : 41 081 M€, +8,6 % en publié et +11,3 % à tcc vs 2023 (37 817 M€), tiré par Dupixent, ALTUVIIIO et Beyfortus (p.6, p.337)."
   },
   {
     "id": "q27",
-    "question": "Comment ont évolué les revenus de Pfizer liés au COVID (Paxlovid, Comirnaty) entre 2023 et 2024 ?",
+    "question": "Comment ont évolué les ventes de Dupixent (dupilumab) de Sanofi entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "10K_Final.pdf",
-    "source_pages": [
-      3,
-      35,
-      37,
-      48,
-      108
-    ],
-    "expected_answer": "# Évolution des revenus COVID de Pfizer entre 2023 et 2024\n\nSelon les documents fournis, voici l'évolution des revenus liés au COVID-19 :\n\n## Chiffres globaux\n\n**Impact opérationnel de Comirnaty et Paxlovid :**\n- **Baisse de 1,455 milliard de dollars** entre 2023 et 2024\n\nCette information est visible dans le graphique de la page 35 qui montre les composantes de l'évolution des revenus totaux.\n\n## Détails par produit\n\n### Comirnaty (vaccin COVID-19)\n- Les revenus ont **décliné** entre 2023 et 2024\n- En 2023 : ventes principalement sous contrats gouvernementaux à l'échelle mondiale\n- En septembre 2023 : transition vers le marché commercial traditionnel aux États-Unis\n- Pour 2024-2025 : taux de vaccination et parts de marché attendus similaires à 2024\n\n### Paxlovid (traitement COVID-19)\n- Les revenus ont connu un **renversement de 3,5 milliards de dollars** au T4 2023\n- Revenus attendus en 2024 provenant de :\n  - Environ 1 million de traitements d'inventaire gouvernemental américain étiqueté EUA\n  - Livraison ponctuelle de traitements au SNS américain\n- En 2023 : ventes principalement aux agences gouvernementales\n- Transition vers les canaux commerciaux attendue pour 2025\n\n## Conclusion\n\nLes revenus liés au COVID-19 (Comirnaty et Paxlovid combinés) ont connu une **baisse significative de 1,455 milliard de dollars** entre 2023 et 2024, reflétant la transition du marché gouvernemental vers le marché commercial et la diminution de la demande globale."
+    "source_document": "Sanofi_DEU_2024.pdf",
+    "source_pages": [338],
+    "expected_answer": "Ventes Dupixent 2024 : 13 072 M€, +22,0 % en publié (+23,1 % à tcc). USA 9 544 M€ (+17,2 % tcc), Europe 1 618 M€ (+31,9 % tcc), Reste du Monde 1 910 M€ (+50,8 % tcc) (p.338)."
   },
   {
     "id": "q28",
-    "question": "Quel est le montant des dépenses de R&D de Pfizer en 2024 ?",
+    "question": "Quel est le montant des dépenses de recherche et développement de Sanofi en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "10K_Final.pdf",
-    "source_pages": [
-      11,
-      34,
-      35,
-      105,
-      106
-    ],
-    "expected_answer": "# Réponse sur les dépenses de R&D de Pfizer en 2024\n\nBien que les pages fournies contiennent des informations détaillées sur les opérations de R&D de Pfizer en 2024, **le montant exact des dépenses de R&D pour 2024 n'est pas explicitement indiqué** dans ces extraits.\n\n## Informations disponibles :\n\nLes documents mentionnent que :\n\n1. **Référence aux coûts de R&D** : La page 11 indique \"For additional information on our R&D operations, including R&D related costs and expenses, see the *Costs and Expenses—Research and Development Expenses* section within MD&A and *Note 11*.\"\n\n2. **Contexte financier global pour 2024** :\n   - Revenus totaux : **63,6 milliards de dollars**\n   - Flux de trésorerie net des opérations : **12,7 milliards de dollars**\n\n3. **Priorités stratégiques** : Le document confirme que \"R&D is at the heart of fulfilling our purpose\" et mentionne une priorité clé pour 2025 : \"*Improve R&D productivity with sharpened focus*\"\n\nPour obtenir le montant précis des dépenses de R&D de Pfizer en 2024, il faudrait consulter la section \"Costs and Expenses—Research and Development Expenses\" du MD&A ou la Note 11 des états financiers, qui ne sont pas incluses dans les pages fournies."
+    "source_document": "Sanofi_DEU_2024.pdf",
+    "source_pages": [337],
+    "expected_answer": "Frais de R&D Sanofi 2024 : 7 394 M€ (18,0 % du CA), +13,6 % vs 2023 (6 507 M€, 17,2 % du CA) (p.337)."
   },
   {
     "id": "q29",
-    "question": "Comment se comparent les revenus de Pfizer entre les États-Unis et l'international ?",
+    "question": "Comment se comparent les revenus de Sanofi entre les États-Unis, l'Europe et le reste du monde ?",
     "category": "comparaison",
-    "source_document": "10K_Final.pdf",
-    "source_pages": [
-      41,
-      43,
-      77,
-      78,
-      107
-    ],
-    "expected_answer": "# Comparaison des revenus de Pfizer entre les États-Unis et l'international\n\nSelon les données du document pour l'année 2023, voici la répartition géographique des revenus de Pfizer :\n\n## Revenus totaux par zone géographique (2023)\n\nLes revenus totaux se répartissent comme suit :\n\n- **États-Unis** : Les revenus américains représentent une part significative des revenus mondiaux\n- **International** : Les revenus internationaux complètent le portefeuille global\n\n## Analyse de la variation 2022-2023\n\nD'après le tableau d'analyse des revenus totaux par zone géographique (page 41), la variation entre 2022 et 2023 montre :\n\n**Déclin opérationnel net :**\n- **Mondial** : -40 600 millions de dollars\n- **États-Unis** : -15 172 millions de dollars  \n- **International** : -25 428 millions de dollars\n\n**Variation totale des revenus :**\n- **Mondial** : -41 621 millions de dollars\n- **États-Unis** : -15 172 millions de dollars\n- **International** : -26 450 millions de dollars\n\n## Répartition par produits clés (2024)\n\nPour certains produits majeurs en 2024 :\n\n**Eliquis :**\n- États-Unis : 4 803 millions de dollars\n- International : 2 563 millions de dollars\n\n**Prevnar family :**\n- États-Unis : 4 233 millions de dollars\n- International : 2 178 millions de dollars\n\nCes chiffres montrent que les États-Unis représentent généralement une part plus importante des revenus que l'international pour les principaux produits de Pfizer."
+    "source_document": "Sanofi_DEU_2024.pdf",
+    "source_pages": [338, 341],
+    "expected_answer": "CA 2024 par zone : États-Unis 19 986 M€ (+16,2 % tcc, 49 % du CA), Europe 9 027 M€ (+2,3 % tcc, 22 %), Reste du Monde 12 068 M€ (+10,7 % tcc, 29 %) (p.338, p.341)."
   },
   {
     "id": "q30",
-    "question": "Quelle est l'évolution du pipeline de médicaments de Pfizer en phases cliniques ?",
+    "question": "Quelle est l'évolution du pipeline de médicaments de Sanofi en phases cliniques ?",
     "category": "graphique",
-    "source_document": "10K_Final.pdf",
-    "source_pages": [
-      11,
-      24,
-      36,
-      45,
-      48
-    ],
-    "expected_answer": "# Évolution du pipeline de médicaments de Pfizer en phases cliniques\n\nSelon les informations du document (au 4 février 2025), le pipeline de R&D de Pfizer comprend **115 projets au total**, répartis comme suit :\n\n## Répartition par phase clinique :\n\n- **Phase 1** : 51 projets\n  - Produits expérimentaux testés pour la première fois dans des essais cliniques humains\n\n- **Phase 2** : 27 projets\n  - Essais axés sur l'efficacité du produit, la posologie idéale et la méthode d'administration\n\n- **Phase 3** : 32 projets\n  - Essais randomisés pour tester les résultats d'essais antérieurs sur de plus grandes populations afin d'analyser l'efficacité et les effets secondaires\n\n- **Enregistrement** : 5 projets\n  - Demandes déposées auprès des autorités réglementaires appropriées lorsque les résultats des essais sont favorables\n\n## Total : **115 projets** dans le pipeline R&D\n\nCette répartition montre un pipeline bien équilibré avec une forte présence en phase 1 (51 projets), ce qui constitue la base pour les futurs produits de l'entreprise."
+    "source_document": "Sanofi_DEU_2024.pdf",
+    "source_pages": [25, 26],
+    "expected_answer": "Pipeline Sanofi fin 2024 : 3 actifs multi-indications clés en Phase 2-3 (amlitelimab, frexalimab, balinatunfib). En Phase 3 : amlitelimab (dermatite atopique), frexalimab (SEP), itepekimab (BPCO), tolebrutinib (SEP progressive). rilzabrutinib en phase réglementaire (TPI). Ajouts 2024 : vaccin ARNm grippe, acquisition Inhibrx (p.25, p.26)."
   },
   {
     "id": "q31",
-    "question": "Quel est le chiffre d'affaires total (total revenues) de Tesla en 2024 ?",
+    "question": "Quel est le chiffre d'affaires total de Carrefour en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "tsla-20241231-gen.pdf",
-    "source_pages": [
-      14,
-      51,
-      52,
-      53,
-      54
-    ],
-    "expected_answer": "Selon le document \"Consolidated Statements of Operations\" de Tesla, Inc. (page 52), le **chiffre d'affaires total (Total revenues) de Tesla en 2024 est de 97 690 millions de dollars**.\n\nCe montant se décompose comme suit :\n- Total automotive revenues : 77 070 millions de dollars\n- Energy generation and storage : 10 086 millions de dollars\n- Services and other : 10 534 millions de dollars\n\n**Total revenues 2024 : 97 690 millions de dollars (ou 97,69 milliards de dollars)**"
+    "source_document": "Carrefour_DEU_2024.pdf",
+    "source_pages": [8, 398],
+    "expected_answer": "CA total Carrefour 2024 : 94 550 M€ TTC et 85 445 M€ HT, +9,9 % en LFL et +2,6 % en publié HT (p.8, p.398)."
   },
   {
     "id": "q32",
-    "question": "Comment a évolué la marge brute de Tesla entre 2023 et 2024 ?",
+    "question": "Comment a évolué la marge opérationnelle de Carrefour entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "tsla-20241231-gen.pdf",
-    "source_pages": [
-      34,
-      52,
-      53,
-      55,
-      91
-    ],
-    "expected_answer": "# Évolution de la marge brute de Tesla entre 2023 et 2024\n\nD'après le compte de résultat consolidé de Tesla (page 52), voici l'évolution de la marge brute :\n\n## Chiffres clés :\n\n**2024 :**\n- Revenus totaux : 97 690 millions de dollars\n- Coût des revenus : 80 240 millions de dollars\n- **Marge brute : 17 450 millions de dollars**\n\n**2023 :**\n- Revenus totaux : 96 773 millions de dollars\n- Coût des revenus : 79 113 millions de dollars\n- **Marge brute : 17 660 millions de dollars**\n\n## Évolution :\n\nLa marge brute de Tesla a **diminué de 210 millions de dollars** entre 2023 et 2024, passant de 17 660 M$ à 17 450 M$.\n\nEn pourcentage des revenus :\n- **2024 : 17,9%** (17 450 / 97 690)\n- **2023 : 18,2%** (17 660 / 96 773)\n\nLa marge brute en pourcentage a donc baissé d'environ **0,3 point de pourcentage**, malgré une légère augmentation des revenus totaux (+917 M$)."
+    "source_document": "Carrefour_DEU_2024.pdf",
+    "source_pages": [398, 400],
+    "expected_answer": "Marge opérationnelle Carrefour (ROC/CA HT) : 2,7 % en 2023 (2 264 M€) → 2,6 % en 2024 (2 213 M€). France +5 pb à 2,6 %, Brésil +59 pb à 4,1 %, Europe hors France en forte baisse (ROC -34,2 %) (p.398, p.400)."
   },
   {
     "id": "q33",
-    "question": "Combien de véhicules Tesla a-t-il livrés en 2024 ?",
+    "question": "Combien de magasins Carrefour exploite-t-il dans le monde fin 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "tsla-20241231-gen.pdf",
-    "source_pages": [
-      36,
-      52,
-      53,
-      55,
-      93
-    ],
-    "expected_answer": "D'après les documents fournis, je ne trouve pas de chiffre précis concernant le nombre de véhicules Tesla livrés en 2024.\n\nLes pages présentées contiennent :\n- Des informations sur le statut de production des différents modèles Tesla (Page 36)\n- Les états financiers consolidés pour l'année 2024 (Pages 52-53)\n\nLes états financiers montrent des revenus de ventes automobiles de 72 480 millions de dollars en 2024, mais ne mentionnent pas le nombre exact de véhicules livrés.\n\nPour obtenir cette information, il faudrait consulter d'autres sections du rapport annuel, notamment la section dédiée aux volumes de production et de livraison qui est généralement incluse dans ce type de document."
+    "source_document": "Carrefour_DEU_2024.pdf",
+    "source_pages": [8, 48],
+    "expected_answer": "Carrefour exploite 15 244 magasins sous enseignes fin 2024 : 6 468 en France, 6 083 en Europe hors France, 1 451 en Amérique latine, 1 242 via partenaires. 3 548 intégrés et 11 696 franchisés (p.8, p.48)."
   },
   {
     "id": "q34",
-    "question": "Comment se comparent les revenus de Tesla entre le segment Automotive et le segment Energy Generation and Storage ?",
+    "question": "Comment se comparent les performances de Carrefour entre la France, l'Europe (hors France) et l'Amérique latine ?",
     "category": "comparaison",
-    "source_document": "tsla-20241231-gen.pdf",
-    "source_pages": [
-      5,
-      52,
-      58,
-      94,
-      95
-    ],
-    "expected_answer": "# Comparaison des revenus de Tesla entre les segments Automotive et Energy Generation and Storage\n\nSelon les données financières du document, voici la comparaison des revenus entre les deux segments :\n\n## **Année 2024 :**\n- **Segment Automotive** : 77 070 millions de dollars\n  - Ventes automobiles : 72 480 M$\n  - Crédits réglementaires automobiles : 2 763 M$\n  - Leasing automobile : 1 827 M$\n\n- **Segment Energy Generation and Storage** : 10 086 millions de dollars\n\n**Ratio : Le segment Automotive représente environ 7,6 fois les revenus du segment Energy**\n\n## **Année 2023 :**\n- **Segment Automotive** : 82 419 millions de dollars\n- **Segment Energy Generation and Storage** : 6 035 millions de dollars\n\n**Ratio : Le segment Automotive représente environ 13,7 fois les revenus du segment Energy**\n\n## **Année 2022 :**\n- **Segment Automotive** : 71 462 millions de dollars\n- **Segment Energy Generation and Storage** : 3 909 millions de dollars\n\n**Ratio : Le segment Automotive représente environ 18,3 fois les revenus du segment Energy**\n\n## **Conclusion :**\nLe segment Automotive domine largement les revenus de Tesla, mais on observe une croissance significative du segment Energy Generation and Storage, qui a presque triplé entre 2022 (3 909 M$) et 2024 (10 086 M$), réduisant ainsi l'écart relatif entre les deux segments."
+    "source_document": "Carrefour_DEU_2024.pdf",
+    "source_pages": [399, 400],
+    "expected_answer": "CA HT 2024 : France 39 540 M€ (46,3 %, ROC 1 042 M€, marge 2,6 %), Europe hors France 23 632 M€ (27,7 %, ROC 397 M€ vs 604 M€, -34,3 %), Amérique latine 22 272 M€ (26,1 %, ROC 879 M€, +15,2 %, marge 3,9 %) (p.399, p.400)."
   },
   {
     "id": "q35",
-    "question": "Quelle est l'évolution trimestrielle des livraisons de véhicules Tesla au cours de l'année 2024 ?",
+    "question": "Quelle est l'évolution des ventes e-commerce de Carrefour au cours des dernières années ?",
     "category": "graphique",
-    "source_document": "tsla-20241231-gen.pdf",
-    "source_pages": [
-      34,
-      36,
-      52,
-      91,
-      92
-    ],
-    "expected_answer": "D'après les documents fournis, je ne trouve pas de données détaillées sur l'évolution trimestrielle des livraisons de véhicules Tesla au cours de l'année 2024.\n\nLes pages fournies contiennent :\n- Un graphique de comparaison des rendements boursiers (page 34)\n- Un tableau sur le statut de production des différents modèles Tesla (page 36)\n- Les états financiers consolidés pour l'année 2024 (page 52)\n\nLe document mentionne bien qu'au premier trimestre 2024, Tesla a connu \"a sequential decline in production volumes partially caused by the early phase of the production ramp of the updated Model 3 at our Fremont factory, and factory shutdowns at Gigafactory Berlin-Brandenburg resulting from shipping diversions caused by the Red Sea conflict and an arson attack.\"\n\nCependant, **les chiffres précis des livraisons trimestrielles pour Q1, Q2, Q3 et Q4 2024 ne sont pas présents dans les pages fournies**. Ces informations sont généralement publiées dans les rapports trimestriels de production et de livraisons de Tesla, qui ne sont pas inclus dans les extraits fournis."
+    "source_document": "Carrefour_DEU_2024.pdf",
+    "source_pages": [28, 409],
+    "expected_answer": "GMV e-commerce Carrefour 2024 : 5,9 Md€, +18 % vs 2023 (5,3 Md€). 3 238 Drives, 33,2 % de PDM en livraison à domicile en France. Objectif plan 2026 : 10 Md€ (p.28, p.409)."
   },
   {
     "id": "q36",
     "question": "Quel est le chiffre d'affaires de TotalEnergies en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
-    "source_pages": [
-      7,
-      50,
-      92,
-      455,
-      641
-    ],
-    "expected_answer": "# Chiffre d'affaires de TotalEnergies en 2024\n\nSelon les documents fournis, je ne trouve pas directement le chiffre d'affaires total de TotalEnergies pour 2024.\n\nCependant, les documents mentionnent :\n\n## Indicateurs financiers disponibles pour 2024 :\n\n- **EBITDA ajusté** : 43 143 millions de dollars\n- **Résultat opérationnel net ajusté des secteurs d'activité** : 20 566 millions de dollars\n- **Résultat net ajusté (part TotalEnergies)** : 18,3 G$ (18 264 millions de dollars)\n- **Résultat net (part TotalEnergies)** : 15,8 G$ (15 758 millions de dollars)\n\n## Remarque :\nLe chiffre d'affaires (ou \"revenus\" / \"ventes\") n'apparaît pas explicitement dans les pages fournies. Les documents présentent principalement des indicateurs de résultats et de rentabilité, mais pas le chiffre d'affaires consolidé pour 2024.\n\nPour obtenir cette information, il faudrait consulter d'autres sections du rapport annuel, notamment le compte de résultat consolidé complet."
+    "source_document": "TotalEnergies_DEU_2024.pdf",
+    "source_pages": [7, 455],
+    "expected_answer": "CA TotalEnergies 2024 : 214 550 M$ (~215 G$). Produits des ventes hors droits d'accises : 195 610 M$ (p.7, p.455)."
   },
   {
     "id": "q37",
     "question": "Comment a évolué la production d'hydrocarbures de TotalEnergies entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
-    "source_pages": [
-      17,
-      49,
-      74,
-      114,
-      180
-    ],
-    "expected_answer": "# Évolution de la production d'hydrocarbures de TotalEnergies entre 2023 et 2024\n\nSelon les documents fournis, voici l'évolution de la production d'hydrocarbures de TotalEnergies :\n\n## Production moyenne journalière\n\n**En 2024 :**\n- **2 434 kbep/j** (kilobarils équivalent pétrole par jour)\n- Dont **2 483 kbep/j** de liquides et gaz naturel\n\n**En 2023 :**\n- **2 765 kbep/j**\n\n**En 2022 :**\n- La production totale d'hydrocarbures était de **53%** en 2022\n\n## Composition de la production en 2024\n\n- **Pétrole brut et bitumes** : 54% de la production totale\n- **Gaz et produits associés** (condensats et liquides de gaz naturel) : 46% de la production totale\n\n## Évolution par rapport à 2023\n\n- **Production totale d'hydrocarbures en 2024** : 44% du mix énergétique\n- **Production totale d'hydrocarbures en 2023** : 53% du mix énergétique\n\nCela représente une **baisse de la production d'hydrocarbures** entre 2023 et 2024, conformément à la stratégie de transition énergétique de TotalEnergies vers des énergies moins carbonées."
+    "source_document": "TotalEnergies_DEU_2024.pdf",
+    "source_pages": [8, 51],
+    "expected_answer": "Production hydrocarbures : 2 483 kbep/j en 2023 → 2 434 kbep/j en 2024 (-2 %). Hors cession Canada (-3,5 %), +2 % portée par Mero 2, Mero 3, Anchor, Fenix (p.8, p.51)."
   },
   {
     "id": "q38",
     "question": "Quel est le résultat net ajusté de TotalEnergies en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
-    "source_pages": [
-      49,
-      50,
-      54,
-      55,
-      57
-    ],
-    "expected_answer": "# Résultat net ajusté de TotalEnergies en 2024\n\nSelon les documents fournis, le **résultat net ajusté de TotalEnergies en 2024** est de :\n\n## **18,3 milliards de dollars**\n\nPlus précisément, voici les chiffres détaillés :\n\n- **Résultat net ajusté (part TotalEnergies)** : **18 264 millions de dollars** (18,3 milliards de dollars)\n- **Résultat net ajusté par action** : **7,77 dollars**\n- **Résultat net ajusté dilué par action** : **7,18 euros**\n\n### Contexte :\nCe résultat de 18,3 milliards de dollars représente une **baisse de 21%** par rapport à 2023 (23,2 milliards de dollars), principalement en raison d'un environnement de prix moins favorable, avec notamment des marges de raffinage et de pétrochimie exceptionnelles en 2023."
+    "source_document": "TotalEnergies_DEU_2024.pdf",
+    "source_pages": [7, 50],
+    "expected_answer": "Résultat net ajusté (part TotalEnergies) 2024 : 18 264 M$ (7,77 $/action dilué), -21 % vs 2023 (23 176 M$) (p.7, p.50)."
   },
   {
     "id": "q39",
     "question": "Quel est le prix moyen du baril de pétrole Brent en 2024 ?",
-    "category": "abstention",
-    "source_document": "",
-    "source_pages": [],
-    "expected_answer": "Cette question est hors du scope des documents disponibles."
+    "category": "chiffre_exact",
+    "source_document": "TotalEnergies_DEU_2024.pdf",
+    "source_pages": [50],
+    "expected_answer": "Prix moyen du Brent en 2024 : 80,8 $/b. Évolution : 80-85 $/b sur les 3 premiers trimestres, baisse à ~75 $/b au T4 (p.50)."
   },
   {
     "id": "q40",
     "question": "Quelle est la répartition des investissements de TotalEnergies entre les énergies fossiles et renouvelables ?",
     "category": "tableau",
-    "source_document": "totalenergies_document-enregistrement-universel-2024_2025_fr.pdf",
-    "source_pages": [
-      5,
-      17,
-      34,
-      181,
-      661
-    ],
-    "expected_answer": "# Répartition des investissements de TotalEnergies\n\nSelon les documents fournis, voici la répartition des investissements de TotalEnergies entre énergies fossiles et renouvelables :\n\n## Objectif d'investissement global\nTotalEnergies maintient un **objectif de dépenses annuelles d'investissement de 16 à 18 milliards de dollars** sur les cinq prochaines années.\n\n## Répartition prévue\n\n### Énergies bas carbone\n- Les **investissements nets dans les énergies bas carbone** devraient représenter **4 à 5 milliards de dollars**, comprenant :\n  - Les investissements dans **Integrated Power** (de l'ordre de 4 milliards de dollars)\n  - Les projets liés aux **biocarburants, biogaz, recyclage du plastique, biopolymères, carburants synthétiques, hydrogène et CCS**\n\n### Énergies fossiles (pétrole et gaz)\n- Un **effort d'investissement important dans les énergies bas carbone**, principalement dans l'**Upstream** (exploration-production) et le **GNL**\n- Ces investissements devraient être alloués à **renforcer la capacité de production de GNL** et soutenir la production de pétrole\n- La production d'hydrocarbures devrait **croître de 3%** entre 2024 et 2030\n\n## Contribution à la réduction de l'empreinte carbone\nÀ partir de 2030, les fonds sur la nature devraient contribuer à la **réduction de l'empreinte carbone de la Compagnie**."
+    "source_document": "TotalEnergies_DEU_2024.pdf",
+    "source_pages": [7, 35],
+    "expected_answer": "Investissements nets 2024 : 17,8 G$ au total. E&P 8,9 G$ (50 %), Integrated LNG 3,5 G$ (20 %), Integrated Power 3,9 G$ (22 %), Raffinage-Chimie 1,5 G$ (9 %). Énergies bas carbone : 4,8 G$ (27 %) dont 4 G$ dans l'électricité (p.7, p.35)."
   },
   {
     "id": "q41",
-    "question": "Quel est le chiffre d'affaires total (total revenues) de Walmart pour l'exercice fiscal 2025 ?",
+    "question": "Quel est le chiffre d'affaires consolidé de Schneider Electric en 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
-    "source_pages": [
-      8,
-      43,
-      56,
-      61,
-      81
-    ],
-    "expected_answer": "# Réponse\n\nLe **chiffre d'affaires total (total revenues) de Walmart pour l'exercice fiscal 2025** est de **648,125 millions de dollars**, soit **648,1 milliards de dollars**.\n\n## Détails trouvés dans les documents :\n\n1. **Page 8** - Dans la section \"Results of Operations\" :\n   - Total revenues 2024 : **$648,125** millions\n\n2. **Page 56** - Dans le \"Consolidated Statements of Income\" :\n   - Total revenues 2024 : **648,125** millions de dollars\n   - Composé de :\n     - Net sales : 642,637 millions de dollars\n     - Membership and other income : 5,488 millions de dollars\n\n**Note** : L'exercice fiscal 2024 de Walmart correspond à l'année se terminant le 31 janvier 2024, ce qui représente effectivement l'exercice fiscal 2025 en termes calendaires."
+    "source_document": "SchneiderElectric_DEU_2024.pdf",
+    "source_pages": [506, 568],
+    "expected_answer": "CA consolidé Schneider Electric 2024 : 38 153 M€, +6,3 % en publié et +8,4 % en organique vs 2023 (35 902 M€) (p.506, p.568)."
   },
   {
     "id": "q42",
-    "question": "Comment ont évolué les ventes e-commerce de Walmart entre 2023 et 2024 ?",
+    "question": "Comment a évolué la croissance organique de Schneider Electric entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
-    "source_pages": [
-      8,
-      38,
-      40,
-      44,
-      61
-    ],
-    "expected_answer": "# Évolution des ventes e-commerce de Walmart entre 2023 et 2024\n\nSelon les documents fournis, voici les informations précises sur l'évolution des ventes e-commerce de Walmart :\n\n## Contribution aux ventes comparables\n\n**Walmart U.S. e-commerce :**\n- **Fiscal 2024** : contribution d'environ **2,6%** aux ventes comparables\n- **Fiscal 2023** : contribution d'environ **0,7%** aux ventes comparables\n\nCette croissance a été principalement portée par le **store pickup** (retrait en magasin) et la **livraison** (delivery).\n\n## Sam's Club e-commerce\n\n**Sam's Club e-commerce :**\n- **Fiscal 2024** : contribution d'environ **1,7%** aux ventes comparables\n- **Fiscal 2023** : contribution d'environ **0,8%** aux ventes comparables\n\n## Conclusion\n\nLes ventes e-commerce de Walmart ont connu une **forte accélération** entre 2023 et 2024 :\n- Pour Walmart U.S. : la contribution est passée de 0,7% à 2,6%, soit une **multiplication par près de 4**\n- Pour Sam's Club : la contribution est passée de 0,8% à 1,7%, soit un **doublement**\n\nCette croissance s'inscrit dans la stratégie omnicanale de l'entreprise qui continue d'investir massivement dans l'innovation e-commerce et les capacités digitales."
+    "source_document": "SchneiderElectric_DEU_2024.pdf",
+    "source_pages": [14, 15],
+    "expected_answer": "Croissance organique 2024 : +8,4 %, dépassant l'objectif de +6 % à +8 %. CA de 35,9 Md€ (2023) à 38,2 Md€ (2024), +6,3 % en publié (p.14, p.15)."
   },
   {
     "id": "q43",
-    "question": "Comment se comparent les résultats opérationnels de Walmart US et Walmart International ?",
+    "question": "Comment se comparent les performances des divisions Energy Management et Industrial Automation de Schneider Electric ?",
     "category": "comparaison",
-    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
-    "source_pages": [
-      11,
-      32,
-      38,
-      80,
-      81
-    ],
-    "expected_answer": "# Comparaison des résultats opérationnels de Walmart US et Walmart International\n\nBien que les pages fournies ne contiennent pas directement les chiffres des résultats opérationnels, voici les informations disponibles pour comparer les deux segments :\n\n## **Ventes nettes (Net Sales)**\n\n### Walmart International :\n- **Exercice 2024** : 114,6 milliards de dollars\n- **Exercice 2023** : 101,0 milliards de dollars  \n- **Exercice 2022** : 101,0 milliards de dollars\n- **Part des ventes consolidées** : 18% en 2024\n\n### Walmart US :\nLes chiffres spécifiques ne sont pas mentionnés dans les pages fournies, mais Walmart International est décrit comme le \"**second largest segment**\" (deuxième plus grand segment), ce qui indique que Walmart US est le plus grand segment.\n\n## **Nombre d'unités (au 31 janvier 2024)**\n\n### Walmart US :\n- **Total** : 4 615 unités\n- Surface : 699 001 milliers de pieds carrés\n\n### Walmart International :\n- **Total** : 5 402 unités  \n- Surface : 273 865 milliers de pieds carrés\n\n## **Observation clé**\n\nWalmart International a **plus d'unités** (5 402 vs 4 615) mais représente une **part plus faible des ventes** (18% des ventes consolidées), ce qui suggère que les ventes par unité sont significativement plus élevées pour Walmart US.\n\n*Note : Les résultats opérationnels détaillés (operating income) ne sont pas présents dans les pages fournies.*"
+    "source_document": "SchneiderElectric_DEU_2024.pdf",
+    "source_pages": [15, 16],
+    "expected_answer": "Energy Management (82 % du CA, 31 131 M€) : +12 % organique, marge EBITA ajusté 22,1 % (+110 pb). Industrial Automation (18 %, 7 022 M€) : -4 % organique, marge 14,8 % (-150 pb), impacté par le marché manufacturier (p.15, p.16)."
   },
   {
     "id": "q44",
-    "question": "Quelle est la répartition des ventes de Walmart par segment (Walmart US, Walmart International, Sam's Club) ?",
+    "question": "Quelle est la répartition géographique du chiffre d'affaires de Schneider Electric ?",
     "category": "tableau",
-    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
-    "source_pages": [
-      32,
-      61,
-      80,
-      81,
-      82
-    ],
-    "expected_answer": "# Répartition des ventes de Walmart par segment\n\nD'après les documents fournis, je peux identifier les **trois segments reportables** de Walmart mentionnés à la page 61 :\n\n1. **Walmart U.S.**\n2. **Walmart International**\n3. **Sam's Club**\n\n## Informations sur les unités (au 31 janvier 2024)\n\nD'après la page 32, voici la répartition des unités de vente au détail :\n\n- **Walmart U.S.** : 4,615 unités (699,001 milliers de pieds carrés)\n  - Supercenters : 3,560\n  - Discount Stores : 360\n  - Neighborhood Markets : 695\n\n- **Sam's Club** : 599 unités (80,199 milliers de pieds carrés)\n\n- **Domestic Total** : 5,214 unités (779,200 milliers de pieds carrés)\n\n- **International** : 5,402 unités (273,865 milliers de pieds carrés)\n  - Retail : 5,075\n  - Wholesale : 327\n\n- **Total Company** : 10,616 unités (1,053,065 milliers de pieds carrés)\n\n**Note** : Les documents fournis ne contiennent pas les chiffres de ventes (revenus) détaillés par segment. Pour obtenir la répartition exacte des ventes en valeur monétaire par segment, il faudrait consulter d'autres pages du rapport financier, notamment les états financiers consolidés ou la note 13 sur les segments mentionnée page 80."
+    "source_document": "SchneiderElectric_DEU_2024.pdf",
+    "source_pages": [6, 526],
+    "expected_answer": "CA 2024 par zone : Amérique du Nord 13 850 M€ (36 %), Asie-Pacifique 10 347 M€ (27 %), Europe de l'Ouest 8 993 M€ (24 %), Reste du monde 4 963 M€ (13 %) (p.6, p.526)."
   },
   {
     "id": "q45",
-    "question": "Quelle est l'évolution du nombre de magasins Walmart dans le monde ?",
+    "question": "Quelle est l'évolution de la marge d'EBITA ajusté de Schneider Electric sur les dernières années ?",
     "category": "graphique",
-    "source_document": "Walmart_2024-AR-10K_Searchable.pdf",
-    "source_pages": [
-      2,
-      8,
-      14,
-      26,
-      38
-    ],
-    "expected_answer": "D'après les documents fournis, voici les informations sur l'évolution du nombre de magasins Walmart dans le monde :\n\n**Situation actuelle :**\nWalmart dispose de **plus de 10 500 magasins et sites e-commerce dans 19 pays** (information mentionnée dans la page 2 du document).\n\nL'entreprise sert environ **255 millions de clients** chaque semaine à travers ce réseau mondial de magasins.\n\n**Présence internationale :**\nAu 31 janvier 2024, le segment Walmart International opère dans **18 pays** (mentionné dans la section sur le développement de l'entreprise).\n\n**Historique :**\n- 1945 : Ouverture du premier magasin (Ben Franklin variety store)\n- 1962 : Ouverture du premier magasin discount\n- 1970 : Introduction en bourse\n- 1983 : Ouverture du premier Sam's Club\n- 1988 : Ouverture du premier supercenter\n- 1991 : Début de l'expansion internationale avec une joint-venture au Mexique\n\nCependant, les documents fournis ne contiennent pas de données chiffrées détaillées sur l'évolution année par année du nombre total de magasins dans le monde. Pour obtenir ces informations précises, il faudrait consulter les rapports annuels historiques de l'entreprise."
+    "source_document": "SchneiderElectric_DEU_2024.pdf",
+    "source_pages": [16, 570],
+    "expected_answer": "Marge EBITA ajusté sur 5 ans : 15,6 % (2020), 17,3 % (2021), 17,6 % (2022), 17,9 % (2023), 18,6 % (2024). Hausse organique +90 pb en 2024 (p.16, p.570)."
   },
   {
     "id": "q46",
     "question": "Quel est le carnet de commandes (order backlog) d'Airbus fin 2024 ?",
     "category": "chiffre_exact",
-    "source_document": "Airbus Annual Report 2024.pdf",
-    "source_pages": [
-      114,
-      127,
-      254,
-      273,
-      474
-    ],
-    "expected_answer": "Selon le document Airbus, le carnet de commandes (order backlog) fin 2024 s'élève à :\n\n**629 milliards d'euros** au total consolidé\n\nCe montant se décompose par segment d'activité :\n\n- **Airbus (avions commerciaux)** : 558,925 milliards d'euros (8 658 unités)\n- **Airbus Helicopters** : 24,064 milliards d'euros (893 unités)\n- **Airbus Defence and Space** : 46,803 milliards d'euros\n\nLe carnet de commandes consolidé a augmenté de 14% par rapport à fin 2023 (554 milliards d'euros), reflétant notamment la consolidation du backlog avec l'augmentation des commandes nettes et le renforcement du dollar américain."
+    "source_document": "Airbus_Annual_Report_2024.pdf",
+    "source_pages": [5, 127],
+    "expected_answer": "Carnet de commandes consolidé Airbus fin 2024 : 628 917 M€ (~629 Md€), +14 % vs 2023 (553 893 M€). En avions commerciaux : 8 658 appareils (p.5, p.127)."
   },
   {
     "id": "q47",
@@ -637,35 +373,23 @@
     "category": "abstention",
     "source_document": "",
     "source_pages": [],
-    "expected_answer": "Cette question est hors du scope des documents disponibles."
+    "expected_answer": ""
   },
   {
     "id": "q48",
     "question": "Comment a évolué le résultat opérationnel (EBIT) ajusté d'Airbus entre 2023 et 2024 ?",
     "category": "tendance",
-    "source_document": "Airbus Annual Report 2024.pdf",
-    "source_pages": [
-      9,
-      17,
-      124,
-      271,
-      345
-    ],
-    "expected_answer": "# Évolution du résultat opérationnel (EBIT) ajusté d'Airbus entre 2023 et 2024\n\nSelon les documents fournis, le résultat opérationnel ajusté (EBIT Adjusted) d'Airbus a évolué comme suit :\n\n## Chiffres clés :\n\n- **2024** : 5 354 millions d'euros\n- **2023** : 5 838 millions d'euros\n\n## Évolution :\n\nL'EBIT ajusté a **diminué de 484 millions d'euros** entre 2023 et 2024, soit une **baisse d'environ 8,3%**.\n\n## Détails par division :\n\nCette baisse globale s'explique notamment par :\n\n- **Airbus (avions commerciaux)** : EBIT ajusté de 5 093 millions € en 2024 vs 4 818 millions € en 2023 (+275 millions €, soit +6%)\n- **Airbus Helicopters** : EBIT ajusté de 818 millions € en 2024 vs 735 millions € en 2023 (+83 millions €, soit +14%)\n- **Airbus Defence and Space** : EBIT ajusté de -566 millions € en 2024 vs -229 millions € en 2023 (détérioration de 337 millions €)\n\nLa performance négative de la division Defence and Space a donc largement pesé sur le résultat consolidé, malgré les bonnes performances des divisions avions commerciaux et hélicoptères."
+    "source_document": "Airbus_Annual_Report_2024.pdf",
+    "source_pages": [4, 124],
+    "expected_answer": "EBIT ajusté consolidé Airbus : 5 838 M€ (2023) → 5 354 M€ (2024), -8,3 %. Commercial Aircraft 5 093 M€ (+5,7 %), Helicopters 818 M€ (+11,3 %), Defence and Space -566 M€ (vs +229 M€, charges spatiales 1,3 Md€) (p.4, p.124)."
   },
   {
     "id": "q49",
     "question": "Comment se comparent les performances des divisions Airbus (Commercial Aircraft, Helicopters, Defence and Space) ?",
     "category": "comparaison",
-    "source_document": "Airbus Annual Report 2024.pdf",
-    "source_pages": [
-      3,
-      9,
-      26,
-      28,
-      31
-    ],
-    "expected_answer": "# Comparaison des performances des divisions Airbus en 2024\n\nSelon les informations du rapport annuel 2024, voici comment se comparent les performances des trois principales divisions :\n\n## **1. Airbus (Commercial Aircraft) - La meilleure performance**\n- **Performance solide** mentionnée comme priorité opérationnelle clé\n- Contribue principalement à l'augmentation de l'EBIT Adjusted à **5,4 milliards €** (vs 5,8 milliards € en 2023)\n- Montée en cadence et progression avec la transformation en cours\n\n## **2. Airbus Helicopters - Performance solide**\n- **Performance solide** explicitement mentionnée dans le rapport du CEO\n- Contribue positivement à la performance globale du groupe\n\n## **3. Airbus Defence and Space - Performance difficile**\n- **Prise de commandes record** pour la deuxième année consécutive avec un carnet de commandes d'environ **1,4 book-to-bill**\n- **MAIS** : l'EBIT Adjusted a été **\"weighed down by a total of €1.3 billion of charges related to Space programmes\"** (plombé par 1,3 milliard € de charges liées aux programmes spatiaux)\n- Secteurs défense et espace perturbés par des changements technologiques et géopolitiques profonds\n- Gestion prudente des risques nécessaire\n\n## **Conclusion**\nCommercial Aircraft et Helicopters affichent des performances solides, tandis que Defence and Space souffre de charges importantes liées aux programmes spatiaux malgré une bonne prise de commandes."
+    "source_document": "Airbus_Annual_Report_2024.pdf",
+    "source_pages": [17, 18, 124],
+    "expected_answer": "Commercial Aircraft (73 % CA) : revenus 50 646 M€ (+6 %), EBIT ajusté 5 093 M€, 766 livraisons. Helicopters (11 %) : 7 941 M€ (+8 %), EBIT 818 M€, marge 10,3 %. Defence and Space (17 %) : 12 082 M€ (+5 %), EBIT -566 M€, order intake record 16 710 M€ (p.17, p.18, p.124)."
   },
   {
     "id": "q50",
@@ -673,6 +397,6 @@
     "category": "abstention",
     "source_document": "",
     "source_pages": [],
-    "expected_answer": "Cette question est hors du scope des documents disponibles."
+    "expected_answer": ""
   }
 ]

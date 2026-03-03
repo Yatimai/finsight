@@ -501,3 +501,65 @@ class TestLoadGroundTruth:
 
         with pytest.raises(ValueError, match="Duplicate"):
             load_ground_truth(gt_file)
+
+
+class TestGroundTruthStructure:
+    """Structural validation of the actual ground_truth.json file."""
+
+    @pytest.fixture()
+    def ground_truth_items(self):
+        from pathlib import Path
+
+        gt_path = Path(__file__).parent.parent / "evaluation" / "ground_truth.json"
+        return load_ground_truth(gt_path)
+
+    def test_has_50_questions(self, ground_truth_items):
+        assert len(ground_truth_items) == 50
+
+    def test_ids_sequential(self, ground_truth_items):
+        ids = [item.id for item in ground_truth_items]
+        expected = [f"q{i:02d}" for i in range(1, 51)]
+        assert ids == expected
+
+    def test_non_abstention_have_source_pages(self, ground_truth_items):
+        for item in ground_truth_items:
+            if item.category.value != "abstention":
+                assert item.source_pages, f"{item.id} missing source_pages"
+                assert len(item.source_pages) <= 3, f"{item.id} has {len(item.source_pages)} source_pages (max 3)"
+
+    def test_non_abstention_have_source_document(self, ground_truth_items):
+        for item in ground_truth_items:
+            if item.category.value != "abstention":
+                assert item.source_document, f"{item.id} missing source_document"
+                assert item.source_document.endswith(".pdf"), f"{item.id} source_document should be a PDF"
+
+    def test_non_abstention_have_expected_answer(self, ground_truth_items):
+        for item in ground_truth_items:
+            if item.category.value != "abstention":
+                assert item.expected_answer, f"{item.id} missing expected_answer"
+
+    def test_abstention_have_no_source(self, ground_truth_items):
+        for item in ground_truth_items:
+            if item.category.value == "abstention":
+                assert not item.source_pages, f"{item.id} is abstention but has source_pages"
+                assert not item.source_document, f"{item.id} is abstention but has source_document"
+                assert not item.expected_answer, f"{item.id} is abstention but has expected_answer"
+
+    def test_source_documents_match_known_pdfs(self, ground_truth_items):
+        known_pdfs = {
+            "LVMH_DEU_2024.pdf",
+            "LOreal_DEU_2024.pdf",
+            "BNP_Paribas_DEU_2024.pdf",
+            "Danone_DEU_2024.pdf",
+            "SocieteGenerale_DEU_2024.pdf",
+            "Sanofi_DEU_2024.pdf",
+            "Carrefour_DEU_2024.pdf",
+            "TotalEnergies_DEU_2024.pdf",
+            "SchneiderElectric_DEU_2024.pdf",
+            "Airbus_Annual_Report_2024.pdf",
+        }
+        for item in ground_truth_items:
+            if item.source_document:
+                assert item.source_document in known_pdfs, (
+                    f"{item.id} has unknown source_document: {item.source_document}"
+                )
