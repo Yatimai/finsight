@@ -213,6 +213,23 @@ class TestPipelineVerification:
 
         assert "Confiance faible" in result.answer
 
+    async def test_verification_error_appends_warning(self, mock_pipeline):
+        """Regression: verification error → answer preserved with warning."""
+        mock_pipeline.config.verification.mode = "sync"
+        mock_pipeline.verifier.verify.return_value = {
+            "status": "error",
+            "confidence": None,
+            "claims": [],
+            "summary": "Verification failed: 529 overloaded",
+        }
+        mock_pipeline.verifier.should_abstain = MagicMock(return_value=False)
+
+        result = await mock_pipeline.query("test")
+
+        assert "Le CA est de 86M" in result.answer
+        assert "non vérifiée" in result.answer
+        assert "indisponible" in result.answer
+
     async def test_skip_verification_flag(self, mock_pipeline):
         await mock_pipeline.query("test", skip_verification=True)
 

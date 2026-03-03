@@ -33,6 +33,7 @@ class GenerationConfig(BaseModel):
 
 class VerificationConfig(BaseModel):
     model: str = "claude-opus-4-6"
+    fallback_models: list[str] = ["claude-opus-4-5-20250929"]
     enabled: bool = True
     mode: str = "batch_async"  # "sync" | "batch_async" | "disabled"
     confidence_threshold: float = 0.7

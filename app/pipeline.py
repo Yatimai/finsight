@@ -227,6 +227,10 @@ class Pipeline:
                             f"Confiance faible ({result.verification.get('confidence', 0):.0%}). "
                             f"Verifiez les sources."
                         )
+                    elif result.verification.get("status") == "error":
+                        result.answer = (
+                            f"{result.answer}\n\nRéponse non vérifiée (service de vérification indisponible)."
+                        )
 
                 elif self.config.verification.mode == "batch_async":
                     await self._verify_batch_async(result.query_id, question, result.answer, result.pages)

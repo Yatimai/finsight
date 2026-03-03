@@ -170,8 +170,20 @@ class TestShouldAbstain:
         assert verifier.should_abstain({"confidence": 0.95}) is False
 
     def test_missing_confidence_defaults_high(self, verifier):
-        """No confidence key → defaults to 1.0, no abstention."""
+        """No confidence key → defaults to None, no abstention."""
         assert verifier.should_abstain({}) is False
+
+    def test_confidence_none_does_not_abstain(self, verifier):
+        """Regression: confidence=None (from _error_result) must not raise TypeError."""
+        assert verifier.should_abstain({"confidence": None}) is False
+
+    def test_status_error_does_not_abstain(self, verifier):
+        """Regression: status=error → don't discard the answer."""
+        assert verifier.should_abstain({"status": "error", "confidence": None}) is False
+
+    def test_disabled_result_does_not_abstain(self, verifier):
+        """_disabled_result has confidence=None → should not abstain."""
+        assert verifier.should_abstain(verifier._disabled_result()) is False
 
 
 # ── _build_verification_content ──────────────────────────────────
@@ -268,7 +280,7 @@ class TestVerify:
         assert result["cache_read_tokens"] == 100
 
     async def test_verify_api_error_returns_error_result(self, verifier):
-        """API failure in verify() returns error result (non-blocking)."""
+        """API failure in verify() returns error result after exhausting all models."""
         from app.errors import ServiceUnavailableError
 
         with (
@@ -281,7 +293,7 @@ class TestVerify:
             result = await verifier.verify("Q?", "A.", [FakePage()])
 
         assert result["status"] == "error"
-        assert "API down" in result["summary"]
+        assert "indisponibles" in result["summary"]
 
 
 # ── submit_batch (batch_async) ───────────────────────────────────
@@ -479,6 +491,99 @@ class TestPollBatch:
         with patch("asyncio.sleep", new_callable=AsyncMock):
             result = await verifier.poll_batch("batch_123", "q-1")
 
+        assert result["status"] == "verified"
+
+
+# ── System prompt content ────────────────────────────────────────
+
+
+# ── verify() fallback models ─────────────────────────────────────
+
+
+class TestVerifyFallback:
+    async def test_fallback_model_used_on_primary_failure(self, verifier):
+        """When primary model fails, fallback model is tried and succeeds."""
+        verifier.config.verification.fallback_models = ["claude-fallback"]
+
+        verification_json = json.dumps(
+            {
+                "claims": [{"id": 1, "claim": "X", "verdict": "CONFIRMÉ", "evidence": "p1", "correction": None}],
+                "confidence": 0.9,
+                "summary": "OK via fallback.",
+            }
+        )
+        mock_response = MagicMock()
+        block = MagicMock()
+        block.text = verification_json
+        mock_response.content = [block]
+        mock_response.usage = MagicMock()
+        mock_response.usage.input_tokens = 400
+        mock_response.usage.output_tokens = 150
+        mock_response.usage.cache_read_input_tokens = 0
+
+        call_count = 0
+
+        async def side_effect(fn, **kwargs):
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise Exception("529 overloaded")
+            return await fn()
+
+        with (
+            patch("app.models.verifier.call_anthropic_with_retry", side_effect=side_effect),
+            patch.object(verifier, "_encode_image", return_value=None),
+        ):
+            # Make the async client return the mock response for fallback call
+            verifier.client.messages.create.return_value = mock_response
+            result = await verifier.verify("Q?", "A.", [FakePage()])
+
+        assert result["status"] == "verified"
+        assert result["confidence"] == 0.9
+        assert result["model_used"] == "claude-fallback"
+
+    async def test_all_models_fail_returns_error(self, verifier):
+        """When all models fail, returns error result."""
+        verifier.config.verification.fallback_models = ["claude-fallback"]
+
+        with (
+            patch(
+                "app.models.verifier.call_anthropic_with_retry",
+                side_effect=Exception("all down"),
+            ),
+            patch.object(verifier, "_encode_image", return_value=None),
+        ):
+            result = await verifier.verify("Q?", "A.", [FakePage()])
+
+        assert result["status"] == "error"
+        assert result["confidence"] is None
+        assert "indisponibles" in result["summary"]
+
+    async def test_primary_model_success_no_fallback(self, verifier):
+        """When primary model succeeds, model_used is the primary model."""
+        verification_json = json.dumps(
+            {
+                "claims": [],
+                "confidence": 0.85,
+                "summary": "OK",
+            }
+        )
+        mock_response = MagicMock()
+        block = MagicMock()
+        block.text = verification_json
+        mock_response.content = [block]
+        mock_response.usage = MagicMock()
+        mock_response.usage.input_tokens = 300
+        mock_response.usage.output_tokens = 100
+        mock_response.usage.cache_read_input_tokens = 0
+
+        with (
+            patch("app.models.verifier.call_anthropic_with_retry", return_value=mock_response),
+            patch.object(verifier, "_encode_image", return_value=None),
+        ):
+            result = await verifier.verify("Q?", "A.", [FakePage()])
+
+        assert result["model_used"] == verifier.config.verification.model
         assert result["status"] == "verified"
 
 

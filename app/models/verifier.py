@@ -85,6 +85,7 @@ class Verifier:
     ) -> dict:
         """
         Verify an answer against source pages.
+        Tries fallback models if the primary model fails.
 
         Returns:
             Dict with "status", "confidence", "claims", "summary",
@@ -94,46 +95,55 @@ class Verifier:
             return self._disabled_result()
 
         content = self._build_verification_content(query, answer, pages)
+        models = [self.config.verification.model, *self.config.verification.fallback_models]
 
-        async def _api_call():
-            response = await self.client.messages.create(
-                model=self.config.verification.model,
-                max_tokens=2048,
-                temperature=0.0,
-                system=[
-                    {
-                        "type": "text",
-                        "text": VERIFICATION_SYSTEM_PROMPT,
-                        "cache_control": {"type": "ephemeral"},
-                    }
-                ],
-                messages=[{"role": "user", "content": content}],
-            )
-            return response
+        for model in models:
 
-        try:
-            response = await call_anthropic_with_retry(
-                _api_call,
-                max_retries=self.config.error_handling.verification_max_retries,
-                backoff_base=self.config.error_handling.backoff_base,
-                component="verifier",
-            )
-            text = extract_text_from_response(response)
-        except Exception as e:
-            # Verification failure is non-blocking
-            return self._error_result(str(e))
+            async def _api_call(m=model):
+                response = await self.client.messages.create(
+                    model=m,
+                    max_tokens=2048,
+                    temperature=0.0,
+                    system=[
+                        {
+                            "type": "text",
+                            "text": VERIFICATION_SYSTEM_PROMPT,
+                            "cache_control": {"type": "ephemeral"},
+                        }
+                    ],
+                    messages=[{"role": "user", "content": content}],
+                )
+                return response
 
-        # Parse the structured response
-        result = self._parse_verification(text)
-        result["input_tokens"] = response.usage.input_tokens
-        result["output_tokens"] = response.usage.output_tokens
-        result["cache_read_tokens"] = getattr(response.usage, "cache_read_input_tokens", 0)
+            try:
+                response = await call_anthropic_with_retry(
+                    _api_call,
+                    max_retries=self.config.error_handling.verification_max_retries,
+                    backoff_base=self.config.error_handling.backoff_base,
+                    component="verifier",
+                )
+                text = extract_text_from_response(response)
+                result = self._parse_verification(text)
+                result["input_tokens"] = response.usage.input_tokens
+                result["output_tokens"] = response.usage.output_tokens
+                result["cache_read_tokens"] = getattr(response.usage, "cache_read_input_tokens", 0)
+                result["model_used"] = model
+                if model != self.config.verification.model:
+                    logger.warning("verification_fallback_used", model=model)
+                return result
+            except Exception as e:
+                logger.warning("verification_model_failed", model=model, error=str(e))
+                continue
 
-        return result
+        return self._error_result("Tous les modèles de vérification indisponibles")
 
     def should_abstain(self, verification_result: dict) -> bool:
         """Check if the system should abstain based on verification."""
-        confidence = verification_result.get("confidence", 1.0)
+        if verification_result.get("status") == "error":
+            return False  # Don't discard a good answer due to verification failure
+        confidence = verification_result.get("confidence")
+        if confidence is None:
+            return False
         return confidence < self.config.verification.confidence_threshold
 
     async def submit_batch(
