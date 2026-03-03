@@ -191,9 +191,11 @@ class Pipeline:
             # Step 1: Rewrite
             result.rewritten_queries = await self._rewrite(question, conversation_history, result)
 
-            # Step 2: Retrieve — pass original embedding to avoid re-encoding
+            # Step 2: Retrieve — include original query alongside rewrites for RAG Fusion
+            # Standard RAG Fusion searches with original + N rewrites, then fuses via RRF.
+            retrieval_queries = [question] + [q for q in result.rewritten_queries if q != question]
             result.pages = self._retrieve(
-                result.rewritten_queries,
+                retrieval_queries,
                 result,
                 precomputed={question: query_embedding},
             )
