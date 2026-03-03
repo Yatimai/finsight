@@ -84,7 +84,7 @@ class Retriever:
             self.client = QdrantClient(url=config.qdrant.remote_url)
 
         # Detect collection capabilities (lazy)
-        self._has_pooled_vector: bool | None = None
+        self._has_global_vector: bool | None = None
 
     @property
     def encoder(self):
@@ -101,17 +101,17 @@ class Retriever:
         return self._encoder
 
     @property
-    def has_pooled_vector(self) -> bool:
-        """Check if collection supports two-stage search (has 'pooled' named vector)."""
-        if self._has_pooled_vector is None:
+    def has_global_vector(self) -> bool:
+        """Check if collection supports two-stage search (has 'global' named vector)."""
+        if self._has_global_vector is None:
             try:
                 collection_info = self.client.get_collection(self.collection_name)
                 vectors_config = collection_info.config.params.vectors
-                self._has_pooled_vector = isinstance(vectors_config, dict) and "pooled" in vectors_config
+                self._has_global_vector = isinstance(vectors_config, dict) and "global" in vectors_config
             except Exception:
-                self._has_pooled_vector = False
-            logger.info("collection_capability", has_pooled=self._has_pooled_vector)
-        return self._has_pooled_vector
+                self._has_global_vector = False
+            logger.info("collection_capability", has_global=self._has_global_vector)
+        return self._has_global_vector
 
     def encode_query(self, query: str) -> QueryEmbedding:
         """Encode a text query with padding hygiene.
@@ -140,7 +140,7 @@ class Retriever:
         """
         top_k = top_k or self.config.retrieval.top_k
 
-        if self.has_pooled_vector:
+        if self.has_global_vector:
             prefetch_k = self.config.retrieval.prefetch_k
             results = self.client.query_points(
                 collection_name=self.collection_name,
@@ -149,8 +149,8 @@ class Retriever:
                 limit=top_k,
                 prefetch=[
                     Prefetch(
-                        query=query_embedding.filtered.tolist(),
-                        using="pooled",
+                        query=query_embedding.pooled.tolist(),
+                        using="global",
                         limit=prefetch_k,
                     )
                 ],
@@ -187,7 +187,7 @@ class Retriever:
         max_candidates = self.config.retrieval.max_candidates
 
         def _search_one(qe: QueryEmbedding):
-            if self.has_pooled_vector:
+            if self.has_global_vector:
                 prefetch_k = self.config.retrieval.prefetch_k
                 return self.client.query_points(
                     collection_name=self.collection_name,
@@ -196,8 +196,8 @@ class Retriever:
                     limit=max_candidates,
                     prefetch=[
                         Prefetch(
-                            query=qe.filtered.tolist(),
-                            using="pooled",
+                            query=qe.pooled.tolist(),
+                            using="global",
                             limit=prefetch_k,
                         )
                     ],

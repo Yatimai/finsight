@@ -285,7 +285,6 @@ class QdrantStorage:
                         multivector_config=MultiVectorConfig(
                             comparator=MultiVectorComparator.MAX_SIM,
                         ),
-                        on_disk=True,
                     ),
                     "pooled": VectorParams(
                         size=embedding_dim,

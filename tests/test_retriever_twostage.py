@@ -76,8 +76,8 @@ class TestQueryEmbedding:
 class TestRetrieverFallback:
     """Test backward compatibility with old mono-vector collections."""
 
-    def test_detects_old_collection_without_pooled(self):
-        """Old collections with only 'colqwen2' vector → has_pooled_vector = False."""
+    def test_detects_old_collection_without_global(self):
+        """Old collections with only 'colqwen2' vector → has_global_vector = False."""
         config = _make_config()
         mock_client = MagicMock()
 
@@ -87,10 +87,10 @@ class TestRetrieverFallback:
         mock_client.get_collection.return_value = collection_info
 
         retriever = Retriever(config, qdrant_client=mock_client)
-        assert not retriever.has_pooled_vector
+        assert not retriever.has_global_vector
 
-    def test_detects_new_collection_with_pooled(self):
-        """New collections with 3 named vectors → has_pooled_vector = True."""
+    def test_detects_new_collection_with_global(self):
+        """New collections with 3 named vectors → has_global_vector = True."""
         config = _make_config()
         mock_client = MagicMock()
 
@@ -103,7 +103,7 @@ class TestRetrieverFallback:
         mock_client.get_collection.return_value = collection_info
 
         retriever = Retriever(config, qdrant_client=mock_client)
-        assert retriever.has_pooled_vector
+        assert retriever.has_global_vector
 
     def test_fallback_search_old_collection(self):
         """Search on old collection uses simple query_points without prefetch."""
@@ -125,7 +125,7 @@ class TestRetrieverFallback:
         pages = retriever.search_single(qe, top_k=2)
 
         assert len(pages) == 2
-        # Should NOT use prefetch
+        # Should NOT use prefetch (old collection without "global" vector)
         call_kwargs = mock_client.query_points.call_args[1]
         assert "prefetch" not in call_kwargs or call_kwargs.get("prefetch") is None
 
@@ -137,11 +137,11 @@ class TestRetrieverFallback:
 
 class TestTwoStageSearch:
     def test_two_stage_search_uses_prefetch(self):
-        """New collection search uses prefetch with pooled vectors."""
+        """New collection search uses prefetch with global vector (single [128])."""
         config = _make_config()
         mock_client = MagicMock()
 
-        # New collection with pooled
+        # New collection with global
         collection_info = MagicMock()
         collection_info.config.params.vectors = {
             "colqwen2": MagicMock(),
@@ -159,10 +159,16 @@ class TestTwoStageSearch:
         pages = retriever.search_single(qe, top_k=5)
 
         assert len(pages) == 1
-        # Should use prefetch
+        # Should use prefetch on "global" named vector
         call_kwargs = mock_client.query_points.call_args[1]
         assert "prefetch" in call_kwargs
-        assert call_kwargs["prefetch"] is not None
+        prefetch_list = call_kwargs["prefetch"]
+        assert len(prefetch_list) == 1
+        pf = prefetch_list[0]
+        assert pf.using == "global"
+        # Prefetch query should be pooled (flat list of floats, not list of lists)
+        assert pf.query == qe.pooled.tolist()
+        assert isinstance(pf.query[0], float)
 
     def test_search_single_returns_retrieved_pages(self):
         """search_single returns properly formatted RetrievedPage objects."""
