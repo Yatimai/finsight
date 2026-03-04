@@ -43,7 +43,8 @@ from indexing.preprocessing import CropConfig, crop_empty
 from indexing.utils import (
     compute_document_hash,
     iter_pdf_files,
-    pdf_to_images,
+    pdf_page_count,
+    pdf_to_images_chunked,
     save_page_images,
 )
 
@@ -446,32 +447,70 @@ def index_document(
         logger.info("already_indexed", filename=filename, hash=doc_hash[:12])
         return {"filename": filename, "status": "skipped", "reason": "already_indexed"}
 
-    # Step 2: PDF → images
-    logger.info("converting_pdf", filename=filename, dpi=config.data.dpi)
-    t0 = time.time()
-    images = pdf_to_images(pdf_path, dpi=config.data.dpi)
-    num_pages = len(images)
-    logger.info("pages_extracted", filename=filename, num_pages=num_pages, duration_s=round(time.time() - t0, 1))
-
-    # Step 3: Save page images (needed for Claude API at query time)
-    logger.info("saving_images", filename=filename)
+    # Step 2: Count pages (lightweight, no image loading)
     doc_id = doc_hash[:12]
-    saved_paths = save_page_images(images, config.data.pages_dir, doc_id)
+    num_pages = pdf_page_count(pdf_path)
+    chunk_size = config.data.chunk_size
+    logger.info("pdf_page_count", filename=filename, num_pages=num_pages, chunk_size=chunk_size)
 
-    # Step 4: Encode with ColQwen2
-    logger.info("encoding", filename=filename, batch_size=config.data.batch_size)
-    t0 = time.time()
-    embeddings = encoder.encode_images(images, batch_size=config.data.batch_size)
-    encode_time = time.time() - t0
+    # Step 3-5: Process by chunks to limit peak memory
+    first_point_id = storage.get_next_id() if not dry_run else 0
+
+    encode_time = 0.0
+    pages_processed = 0
+
+    for chunk_start, chunk_images in pdf_to_images_chunked(pdf_path, dpi=config.data.dpi, chunk_size=chunk_size):
+        chunk_num = chunk_start // chunk_size + 1
+        logger.info(
+            "processing_chunk",
+            filename=filename,
+            chunk=chunk_num,
+            pages=f"{chunk_start + 1}-{chunk_start + len(chunk_images)}",
+        )
+
+        # Save page images (needed for Claude API at query time)
+        saved_paths = save_page_images(chunk_images, config.data.pages_dir, doc_id, page_offset=chunk_start)
+
+        # Encode with ColQwen2
+        t0 = time.time()
+        embeddings = encoder.encode_images(chunk_images, batch_size=config.data.batch_size)
+        encode_time += time.time() - t0
+
+        # Store in Qdrant (skip in dry-run mode)
+        if not dry_run:
+            for i, (embedding, image_path) in enumerate(zip(embeddings, saved_paths, strict=False)):
+                page_number = chunk_start + i + 1
+                point_id = first_point_id + chunk_start + i
+
+                tile_pooled, global_mean = ColQwen2Encoder.compute_pooled(embedding)
+
+                metadata = {
+                    "document_id": doc_id,
+                    "document_hash": doc_hash,
+                    "source_filename": filename,
+                    "page_number": page_number,
+                    "total_pages": num_pages,
+                    "image_path": str(image_path),
+                    "indexed_at": datetime.now(UTC).isoformat(),
+                    "num_patches": embedding.shape[0],
+                    "num_tiles": tile_pooled.shape[0],
+                }
+
+                storage.store_page(point_id, embedding, tile_pooled, global_mean, metadata)
+
+        pages_processed += len(chunk_images)
+
+        # Free memory before next chunk
+        del chunk_images, embeddings, saved_paths
+
     logger.info(
-        "encoded",
+        "encoding_complete",
         filename=filename,
-        pages=len(embeddings),
+        pages=pages_processed,
         duration_s=round(encode_time, 1),
-        per_page_s=round(encode_time / num_pages, 2),
+        per_page_s=round(encode_time / num_pages, 2) if num_pages > 0 else 0,
     )
 
-    # Step 5: Store in Qdrant (skip in dry-run mode)
     if dry_run:
         logger.info("dry_run_skip_qdrant", filename=filename, num_pages=num_pages)
         return {
@@ -481,30 +520,6 @@ def index_document(
             "num_pages": num_pages,
             "encode_time_s": round(encode_time, 1),
         }
-
-    logger.info("storing_qdrant", filename=filename)
-    first_point_id = storage.get_next_id()
-
-    for i, (embedding, image_path) in enumerate(zip(embeddings, saved_paths, strict=False)):
-        page_number = i + 1
-        point_id = first_point_id + i
-
-        # Compute pooled vectors for two-stage search
-        tile_pooled, global_mean = ColQwen2Encoder.compute_pooled(embedding)
-
-        metadata = {
-            "document_id": doc_id,
-            "document_hash": doc_hash,
-            "source_filename": filename,
-            "page_number": page_number,
-            "total_pages": num_pages,
-            "image_path": str(image_path),
-            "indexed_at": datetime.now(UTC).isoformat(),
-            "num_patches": embedding.shape[0],
-            "num_tiles": tile_pooled.shape[0],
-        }
-
-        storage.store_page(point_id, embedding, tile_pooled, global_mean, metadata)
 
     # Step 6: Mark as indexed
     tracker.mark_indexed(doc_hash, filename, num_pages, first_point_id)

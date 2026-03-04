@@ -90,10 +90,19 @@ class TestIndexTracker:
 # ---------------------------------------------------------------------------
 
 
+def _setup_chunked_mocks(mock_save, mock_chunked, mock_count, tmp_path, num_pages=1):
+    """Configure mocks for chunked indexing pipeline."""
+    mock_count.return_value = num_pages
+    images = [Image.new("RGB", (10, 10)) for _ in range(num_pages)]
+    mock_chunked.return_value = iter([(0, images)])
+    mock_save.return_value = [tmp_path / f"page_{i + 1:04d}.png" for i in range(num_pages)]
+
+
 class TestIndexDocumentForce:
-    @patch("indexing.index_documents.pdf_to_images")
+    @patch("indexing.index_documents.pdf_page_count")
+    @patch("indexing.index_documents.pdf_to_images_chunked")
     @patch("indexing.index_documents.save_page_images")
-    def test_skips_already_indexed_without_force(self, mock_save, mock_pdf2img, tmp_path):
+    def test_skips_already_indexed_without_force(self, mock_save, mock_chunked, mock_count, tmp_path):
         pdf = _make_fake_pdf(tmp_path)
         config = _make_config(tmp_path)
         encoder = _make_mock_encoder()
@@ -102,8 +111,7 @@ class TestIndexDocumentForce:
         tracker = IndexTracker(tracker_path=str(tmp_path / "tracker.json"))
 
         # First indexing
-        mock_pdf2img.return_value = [Image.new("RGB", (10, 10))]
-        mock_save.return_value = [tmp_path / "page_0001.png"]
+        _setup_chunked_mocks(mock_save, mock_chunked, mock_count, tmp_path)
         result1 = index_document(pdf, encoder, storage, tracker, config)
         assert result1["status"] == "indexed"
 
@@ -112,9 +120,10 @@ class TestIndexDocumentForce:
         assert result2["status"] == "skipped"
         assert result2["reason"] == "already_indexed"
 
-    @patch("indexing.index_documents.pdf_to_images")
+    @patch("indexing.index_documents.pdf_page_count")
+    @patch("indexing.index_documents.pdf_to_images_chunked")
     @patch("indexing.index_documents.save_page_images")
-    def test_reindexes_with_force(self, mock_save, mock_pdf2img, tmp_path):
+    def test_reindexes_with_force(self, mock_save, mock_chunked, mock_count, tmp_path):
         pdf = _make_fake_pdf(tmp_path)
         config = _make_config(tmp_path)
         encoder = _make_mock_encoder()
@@ -123,12 +132,12 @@ class TestIndexDocumentForce:
         tracker = IndexTracker(tracker_path=str(tmp_path / "tracker.json"))
 
         # First indexing
-        mock_pdf2img.return_value = [Image.new("RGB", (10, 10))]
-        mock_save.return_value = [tmp_path / "page_0001.png"]
+        _setup_chunked_mocks(mock_save, mock_chunked, mock_count, tmp_path)
         result1 = index_document(pdf, encoder, storage, tracker, config)
         assert result1["status"] == "indexed"
 
         # Second call WITH force → re-index
+        _setup_chunked_mocks(mock_save, mock_chunked, mock_count, tmp_path)
         result2 = index_document(pdf, encoder, storage, tracker, config, force=True)
         assert result2["status"] == "indexed"
 
@@ -139,9 +148,10 @@ class TestIndexDocumentForce:
 
 
 class TestDryRun:
-    @patch("indexing.index_documents.pdf_to_images")
+    @patch("indexing.index_documents.pdf_page_count")
+    @patch("indexing.index_documents.pdf_to_images_chunked")
     @patch("indexing.index_documents.save_page_images")
-    def test_dry_run_skips_qdrant_and_tracker(self, mock_save, mock_pdf2img, tmp_path):
+    def test_dry_run_skips_qdrant_and_tracker(self, mock_save, mock_chunked, mock_count, tmp_path):
         pdf = _make_fake_pdf(tmp_path)
         config = _make_config(tmp_path)
         encoder = _make_mock_encoder()
@@ -149,8 +159,7 @@ class TestDryRun:
 
         tracker = IndexTracker(tracker_path=str(tmp_path / "tracker.json"))
 
-        mock_pdf2img.return_value = [Image.new("RGB", (10, 10)), Image.new("RGB", (10, 10))]
-        mock_save.return_value = [tmp_path / "p1.png", tmp_path / "p2.png"]
+        _setup_chunked_mocks(mock_save, mock_chunked, mock_count, tmp_path, num_pages=2)
 
         result = index_document(pdf, encoder, storage, tracker, config, dry_run=True)
 
@@ -164,9 +173,10 @@ class TestDryRun:
         # Tracker was NOT written
         assert not tracker.is_indexed(result["document_id"])
 
-    @patch("indexing.index_documents.pdf_to_images")
+    @patch("indexing.index_documents.pdf_page_count")
+    @patch("indexing.index_documents.pdf_to_images_chunked")
     @patch("indexing.index_documents.save_page_images")
-    def test_dry_run_still_calls_encoder(self, mock_save, mock_pdf2img, tmp_path):
+    def test_dry_run_still_calls_encoder(self, mock_save, mock_chunked, mock_count, tmp_path):
         pdf = _make_fake_pdf(tmp_path)
         config = _make_config(tmp_path)
         encoder = _make_mock_encoder()
@@ -174,19 +184,18 @@ class TestDryRun:
 
         tracker = IndexTracker(tracker_path=str(tmp_path / "tracker.json"))
 
-        images = [Image.new("RGB", (10, 10))]
-        mock_pdf2img.return_value = images
-        mock_save.return_value = [tmp_path / "p1.png"]
+        _setup_chunked_mocks(mock_save, mock_chunked, mock_count, tmp_path)
 
         index_document(pdf, encoder, storage, tracker, config, dry_run=True)
 
-        # PDF conversion and encoding DID happen
-        mock_pdf2img.assert_called_once()
+        # Chunked conversion and encoding DID happen
+        mock_chunked.assert_called_once()
         encoder.encode_images.assert_called_once()
 
-    @patch("indexing.index_documents.pdf_to_images")
+    @patch("indexing.index_documents.pdf_page_count")
+    @patch("indexing.index_documents.pdf_to_images_chunked")
     @patch("indexing.index_documents.save_page_images")
-    def test_dry_run_with_force_still_processes(self, mock_save, mock_pdf2img, tmp_path):
+    def test_dry_run_with_force_still_processes(self, mock_save, mock_chunked, mock_count, tmp_path):
         """dry_run + force: even if already indexed, process but don't write."""
         pdf = _make_fake_pdf(tmp_path)
         config = _make_config(tmp_path)
@@ -195,13 +204,98 @@ class TestDryRun:
 
         tracker = IndexTracker(tracker_path=str(tmp_path / "tracker.json"))
 
-        mock_pdf2img.return_value = [Image.new("RGB", (10, 10))]
-        mock_save.return_value = [tmp_path / "p1.png"]
-
         # First: index normally
+        _setup_chunked_mocks(mock_save, mock_chunked, mock_count, tmp_path)
         result1 = index_document(pdf, encoder, storage, tracker, config)
         assert result1["status"] == "indexed"
 
         # Now dry_run + force: should process (not skip) but not write
+        _setup_chunked_mocks(mock_save, mock_chunked, mock_count, tmp_path)
         result2 = index_document(pdf, encoder, storage, tracker, config, force=True, dry_run=True)
         assert result2["status"] == "dry_run"
+
+
+# ---------------------------------------------------------------------------
+# TestChunkedIndexing
+# ---------------------------------------------------------------------------
+
+
+class TestChunkedIndexing:
+    @patch("indexing.index_documents.pdf_page_count")
+    @patch("indexing.index_documents.pdf_to_images_chunked")
+    @patch("indexing.index_documents.save_page_images")
+    def test_multi_chunk_stores_correct_page_numbers(self, mock_save, mock_chunked, mock_count, tmp_path):
+        """5 pages, chunk_size=2 → 3 chunks, page numbers 1-5 stored correctly."""
+        pdf = _make_fake_pdf(tmp_path)
+        config = _make_config(tmp_path)
+        config.data.chunk_size = 2
+        encoder = _make_mock_encoder()
+        storage = _make_mock_storage()
+        tracker = IndexTracker(tracker_path=str(tmp_path / "tracker.json"))
+
+        mock_count.return_value = 5
+
+        # Simulate 3 chunks: (0, 2 images), (2, 2 images), (4, 1 image)
+        chunk_data = [
+            (0, [Image.new("RGB", (10, 10)), Image.new("RGB", (10, 10))]),
+            (2, [Image.new("RGB", (10, 10)), Image.new("RGB", (10, 10))]),
+            (4, [Image.new("RGB", (10, 10))]),
+        ]
+        mock_chunked.return_value = iter(chunk_data)
+
+        # save_page_images is called per chunk
+        mock_save.side_effect = [
+            [tmp_path / "page_0001.png", tmp_path / "page_0002.png"],
+            [tmp_path / "page_0003.png", tmp_path / "page_0004.png"],
+            [tmp_path / "page_0005.png"],
+        ]
+
+        result = index_document(pdf, encoder, storage, tracker, config)
+
+        assert result["status"] == "indexed"
+        assert result["num_pages"] == 5
+
+        # 5 pages stored in Qdrant
+        assert storage.store_page.call_count == 5
+
+        # Verify page numbers are 1..5
+        stored_page_numbers = [
+            call.kwargs["metadata"]["page_number"] if "metadata" in call.kwargs else call.args[4]["page_number"]
+            for call in storage.store_page.call_args_list
+        ]
+        assert stored_page_numbers == [1, 2, 3, 4, 5]
+
+        # Verify point IDs are sequential
+        stored_point_ids = [call.args[0] for call in storage.store_page.call_args_list]
+        assert stored_point_ids == [0, 1, 2, 3, 4]
+
+    @patch("indexing.index_documents.pdf_page_count")
+    @patch("indexing.index_documents.pdf_to_images_chunked")
+    @patch("indexing.index_documents.save_page_images")
+    def test_save_called_with_correct_offsets(self, mock_save, mock_chunked, mock_count, tmp_path):
+        """Verify save_page_images receives correct page_offset per chunk."""
+        pdf = _make_fake_pdf(tmp_path)
+        config = _make_config(tmp_path)
+        config.data.chunk_size = 2
+        encoder = _make_mock_encoder()
+        storage = _make_mock_storage()
+        tracker = IndexTracker(tracker_path=str(tmp_path / "tracker.json"))
+
+        mock_count.return_value = 3
+
+        chunk_data = [
+            (0, [Image.new("RGB", (10, 10)), Image.new("RGB", (10, 10))]),
+            (2, [Image.new("RGB", (10, 10))]),
+        ]
+        mock_chunked.return_value = iter(chunk_data)
+        mock_save.side_effect = [
+            [tmp_path / "page_0001.png", tmp_path / "page_0002.png"],
+            [tmp_path / "page_0003.png"],
+        ]
+
+        index_document(pdf, encoder, storage, tracker, config)
+
+        # save_page_images called twice with correct offsets
+        assert mock_save.call_count == 2
+        assert mock_save.call_args_list[0].kwargs["page_offset"] == 0
+        assert mock_save.call_args_list[1].kwargs["page_offset"] == 2

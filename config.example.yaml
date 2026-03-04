@@ -79,3 +79,4 @@ data:
   pages_dir: "./data/pages"
   dpi: 300                  # PDF to image resolution
   batch_size: 8             # Pages per batch for GPU encoding
+  chunk_size: 50            # Pages per chunk for PDF processing (reduces peak RAM)

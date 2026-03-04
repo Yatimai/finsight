@@ -87,6 +87,7 @@ class DataConfig(BaseModel):
     pages_dir: str = "./data/pages"
     dpi: int = 300
     batch_size: int = 8
+    chunk_size: int = 50
 
 
 class AppConfig(BaseModel):

@@ -39,8 +39,17 @@ def pdf_to_images(
         return _pdf_to_images_pdf2image(pdf_path, dpi)
 
 
-def _pdf_to_images_pymupdf(pdf_path: Path, dpi: int) -> list[Image.Image]:
-    """Convert PDF to images using pymupdf (fitz)."""
+def _pdf_to_images_pymupdf(
+    pdf_path: Path, dpi: int, start_page: int = 0, end_page: int | None = None
+) -> list[Image.Image]:
+    """Convert PDF to images using pymupdf (fitz).
+
+    Args:
+        pdf_path: Path to the PDF file.
+        dpi: Resolution for rendering.
+        start_page: First page index (0-based, inclusive).
+        end_page: Last page index (0-based, exclusive). None = all pages.
+    """
     import fitz  # pymupdf
 
     images = []
@@ -49,7 +58,10 @@ def _pdf_to_images_pymupdf(pdf_path: Path, dpi: int) -> list[Image.Image]:
 
     doc = fitz.open(str(pdf_path))
     try:
-        for page in doc:
+        if end_page is None:
+            end_page = len(doc)
+        for page_idx in range(start_page, min(end_page, len(doc))):
+            page = doc[page_idx]
             pix = page.get_pixmap(matrix=matrix)
             img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
             images.append(img)
@@ -66,10 +78,58 @@ def _pdf_to_images_pdf2image(pdf_path: Path, dpi: int) -> list[Image.Image]:
     return convert_from_path(str(pdf_path), dpi=dpi)
 
 
+def pdf_page_count(pdf_path: str | Path) -> int:
+    """Return the number of pages in a PDF without loading images into memory."""
+    pdf_path = Path(pdf_path)
+    if not pdf_path.exists():
+        raise FileNotFoundError(f"PDF not found: {pdf_path}")
+
+    try:
+        import fitz  # pymupdf
+
+        doc = fitz.open(str(pdf_path))
+        try:
+            return len(doc)
+        finally:
+            doc.close()
+    except ImportError:
+        from pdf2image import pdfinfo_from_path
+
+        info = pdfinfo_from_path(str(pdf_path))
+        return info["Pages"]
+
+
+def pdf_to_images_chunked(
+    pdf_path: str | Path,
+    dpi: int = 300,
+    chunk_size: int = 50,
+) -> Generator[tuple[int, list[Image.Image]], None, None]:
+    """
+    Yield chunks of page images from a PDF to limit peak memory usage.
+
+    Yields:
+        Tuples of (chunk_start_page_0indexed, list_of_images).
+        chunk_start is 0-based so page_number = chunk_start + i + 1.
+    """
+    pdf_path = Path(pdf_path)
+    total = pdf_page_count(pdf_path)
+
+    for start in range(0, total, chunk_size):
+        end = min(start + chunk_size, total)
+        try:
+            images = _pdf_to_images_pymupdf(pdf_path, dpi, start_page=start, end_page=end)
+        except ImportError:
+            from pdf2image import convert_from_path
+
+            images = convert_from_path(str(pdf_path), dpi=dpi, first_page=start + 1, last_page=end)
+        yield start, images
+
+
 def save_page_images(
     images: list[Image.Image],
     output_dir: str | Path,
     document_id: str,
+    page_offset: int = 0,
 ) -> list[Path]:
     """
     Save page images to disk as PNGs.
@@ -83,7 +143,7 @@ def save_page_images(
     doc_dir.mkdir(exist_ok=True)
 
     saved_paths = []
-    for page_num, img in enumerate(images, start=1):
+    for page_num, img in enumerate(images, start=page_offset + 1):
         filename = f"page_{page_num:04d}.png"
         filepath = doc_dir / filename
         img.save(filepath, "PNG")
