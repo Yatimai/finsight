@@ -264,7 +264,7 @@ class QdrantStorage:
         if config.qdrant.mode == "embedded":
             self.client = QdrantClient(path=config.qdrant.path)
         else:
-            self.client = QdrantClient(url=config.qdrant.remote_url)
+            self.client = QdrantClient(url=config.qdrant.remote_url, timeout=120)
 
     def ensure_collection(self, embedding_dim: int = 128):
         """Create collection with 3 named vectors for two-stage search.
