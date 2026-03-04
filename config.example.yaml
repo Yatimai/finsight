@@ -14,6 +14,11 @@ rewriting:
   max_rewrites: 3           # 1 = simple rewrite, 3 = RAG Fusion
   rrf_k: 60                 # RRF constant (standard = 60)
 
+reranking:
+  enabled: false                # Set to true on GPU pods (MonoQwen2-VL, ~4 Go VRAM)
+  model: "lightonai/MonoQwen2-VL-v0.1"
+  top_k: 5                     # Pages kept after reranking (from retrieval.top_k candidates)
+
 generation:
   model: "claude-sonnet-4-5-20250929"
   max_tokens: 1024

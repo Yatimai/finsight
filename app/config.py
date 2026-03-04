@@ -54,6 +54,12 @@ class QdrantConfig(BaseModel):
     remote_url: str | None = None
 
 
+class RerankingConfig(BaseModel):
+    enabled: bool = False  # Disabled by default (no GPU in CI)
+    model: str = "lightonai/MonoQwen2-VL-v0.1"
+    top_k: int = 5  # Pages kept after reranking
+
+
 class ErrorHandlingConfig(BaseModel):
     generation_max_retries: int = 3
     verification_max_retries: int = 5
@@ -93,6 +99,7 @@ class DataConfig(BaseModel):
 class AppConfig(BaseModel):
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     rewriting: RewritingConfig = Field(default_factory=RewritingConfig)
+    reranking: RerankingConfig = Field(default_factory=RerankingConfig)
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     verification: VerificationConfig = Field(default_factory=VerificationConfig)
     caching: CachingConfig = Field(default_factory=CachingConfig)

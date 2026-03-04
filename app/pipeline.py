@@ -17,6 +17,7 @@ from app.config import AppConfig
 from app.errors import RewritingFallbackError, ServiceUnavailableError
 from app.logging import get_logger
 from app.models.generator import Generator
+from app.models.reranker import VisualReranker
 from app.models.retriever import RetrievedPage, Retriever
 from app.models.rewriter import QueryRewriter
 from app.models.verifier import Verifier
@@ -44,6 +45,9 @@ class QueryResult:
         # Retrieval
         self.pages: list[RetrievedPage] = []
         self.retrieval_latency_ms: float = 0
+
+        # Reranking
+        self.reranking_latency_ms: float = 0
 
         # Generation
         self.answer: str = ""
@@ -102,6 +106,9 @@ class QueryResult:
                 "scores": [round(p.score, 4) for p in self.pages],
                 "queries_searched": len(self.rewritten_queries),
             },
+            "reranking": {
+                "latency_ms": round(self.reranking_latency_ms),
+            },
             "generation": {
                 "latency_ms": round(self.generation_latency_ms),
                 "citations_found": [c.get("page") for c in self.citations],
@@ -147,6 +154,7 @@ class Pipeline:
         # Initialize components
         self.rewriter = QueryRewriter(config, self.client)
         self.retriever = Retriever(config)
+        self.reranker = VisualReranker(config.reranking) if config.reranking.enabled else None
         self.generator = Generator(config, self.client)
         self.verifier = Verifier(config, self.client)
         self.cache = SemanticCache(config.caching)
@@ -278,7 +286,7 @@ class Pipeline:
         result: QueryResult,
         precomputed: dict | None = None,
     ) -> list[RetrievedPage]:
-        """Step 2: Retrieve pages with ColQwen2 + RRF."""
+        """Step 2: Retrieve pages with ColQwen2 + RRF, then optionally rerank."""
         t0 = time.time()
 
         pages, _ = self.retriever.retrieve(
@@ -286,10 +294,18 @@ class Pipeline:
             precomputed_embeddings=precomputed,
         )
 
-        for page in pages:
-            page.load_image()
-
         result.retrieval_latency_ms = (time.time() - t0) * 1000
+
+        if self.reranker is not None:
+            t1 = time.time()
+            # Reranker loads images internally via load_image()
+            pages = self.reranker.rerank(result.question, pages)
+            pages = pages[: self.config.reranking.top_k]
+            result.reranking_latency_ms = (time.time() - t1) * 1000
+        else:
+            for page in pages:
+                page.load_image()
+
         return pages
 
     async def _generate(

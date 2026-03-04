@@ -6,8 +6,8 @@ Visual RAG pour documents financiers. ColQwen2 + Qdrant + Claude Sonnet/Opus.
 
 ```
 Query → Rewriter (Sonnet, RAG Fusion ×3) → Retriever (ColQwen2 + Qdrant + RRF)
-      → Generator (Sonnet, avec pages images) → Verifier (Opus, adversarial)
-      → SemanticCache (LRU thread-safe)
+      → Reranker (MonoQwen2-VL, optionnel) → Generator (Sonnet, avec pages images)
+      → Verifier (Opus, adversarial) → SemanticCache (LRU thread-safe)
 ```
 
 ### Modules
@@ -16,6 +16,7 @@ Query → Rewriter (Sonnet, RAG Fusion ×3) → Retriever (ColQwen2 + Qdrant + R
 |---|---|
 | `app/models/rewriter.py` | Génère 3 variantes de la question (RAG Fusion) |
 | `app/models/retriever.py` | Encode query ColQwen2, recherche Qdrant, fusionne par RRF |
+| `app/models/reranker.py` | Reranker visuel MonoQwen2-VL, score (query, image) paires, désactivé par défaut |
 | `app/models/generator.py` | Construit le prompt multimodal (images pages), appelle Sonnet |
 | `app/models/verifier.py` | Vérifie la réponse contre les sources (Opus sync ou batch async) |
 | `app/pipeline.py` | Orchestre le flux complet : cache → rewrite → retrieve → generate → verify |

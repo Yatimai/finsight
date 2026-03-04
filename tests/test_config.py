@@ -58,6 +58,12 @@ class TestAppConfig:
         origins = config.security.allowed_origins
         assert any("localhost" in o for o in origins)
 
+    def test_reranking_disabled_by_default(self):
+        """Reranking must be disabled by default (no GPU in CI)."""
+        config = AppConfig()
+        assert config.reranking.enabled is False
+        assert config.reranking.top_k == 5
+
     def test_rate_limit_config_exists(self):
         """Bug 5 regression: SecurityConfig must have a rate_limit field."""
         config = AppConfig()
