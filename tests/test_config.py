@@ -10,7 +10,7 @@ class TestAppConfig:
     def test_default_config(self):
         config = AppConfig()
         assert config.retrieval.model == "vidore/colqwen2.5-v0.2"
-        assert config.retrieval.top_k == 5
+        assert config.retrieval.top_k == 10
         assert config.generation.model == "claude-sonnet-4-5-20250929"
         assert config.verification.model == "claude-opus-4-6"
         assert config.verification.mode == "batch_async"

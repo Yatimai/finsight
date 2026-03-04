@@ -3,7 +3,7 @@
 
 retrieval:
   model: "vidore/colqwen2.5-v0.2"
-  top_k: 5
+  top_k: 10                      # Retrieval depth (over-fetches ×3 internally for document filtering)
   max_candidates: 50
   mask_non_image_embeddings: true   # Filter non-visual tokens (prompt, special)
   prefetch_k: 100                   # Two-stage search: prefetch candidates

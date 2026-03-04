@@ -9,6 +9,7 @@ Two-stage search:
   Stage 2 (rerank): Exact MaxSim on full visual patch vectors
 """
 
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
@@ -235,7 +236,7 @@ class Retriever:
         precomputed_embeddings: dict[str, QueryEmbedding] | None = None,
     ) -> tuple[list[RetrievedPage], list[QueryEmbedding]]:
         """
-        Full retrieval pipeline: encode queries → search → (optional RRF) → return.
+        Full retrieval pipeline: encode queries → search → filter by document → return.
 
         Args:
             queries: List of query strings (1 for simple, 3 for RAG Fusion)
@@ -246,6 +247,9 @@ class Retriever:
         Returns:
             Tuple of (retrieved pages, query embeddings)
         """
+        top_k = top_k or self.config.retrieval.top_k
+        internal_k = top_k * 3  # Over-fetch to have room after document filtering
+
         precomputed = precomputed_embeddings or {}
 
         # Encode queries, reusing precomputed embeddings when available
@@ -256,13 +260,38 @@ class Retriever:
             else:
                 query_embeddings.append(self.encode_query(q))
 
-        # Search
+        # Search with over-fetched internal_k
         if len(query_embeddings) == 1:
-            pages = self.search_single(query_embeddings[0], top_k=top_k)
+            pages = self.search_single(query_embeddings[0], top_k=internal_k)
         else:
-            pages = self.search_multi(query_embeddings, top_k=top_k)
+            pages = self.search_multi(query_embeddings, top_k=internal_k)
+
+        # Filter by majority document, then truncate to requested top_k
+        pages = self._filter_by_majority_document(pages)
+        pages = pages[:top_k]
 
         return pages, query_embeddings
+
+    def _filter_by_majority_document(self, pages: list[RetrievedPage]) -> list[RetrievedPage]:
+        """Keep only pages from the majority document(s).
+
+        Counts document_id occurrences in the retrieved pages and keeps only
+        pages belonging to the most frequent document(s). Ties are preserved
+        (e.g. 3 pages doc_A + 3 pages doc_B → both kept).
+        """
+        if not pages:
+            return pages
+        doc_counts = Counter(p.document_id for p in pages)
+        max_count = max(doc_counts.values())
+        majority_docs = {doc for doc, count in doc_counts.items() if count == max_count}
+        filtered = [p for p in pages if p.document_id in majority_docs]
+        logger.info(
+            "document_filter",
+            total=len(pages),
+            kept=len(filtered),
+            majority_docs=list(majority_docs),
+        )
+        return filtered
 
     def _rrf_fusion(
         self,
