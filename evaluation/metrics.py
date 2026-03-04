@@ -80,6 +80,7 @@ def compute_category_breakdown(
             "count": float(len(cat_results)),
             "recall_at_1": compute_recall_at_k(cat_results, 1),
             "recall_at_5": compute_recall_at_k(cat_results, 5),
+            "recall_at_10": compute_recall_at_k(cat_results, 10),
             "citation_accuracy": compute_citation_accuracy(cat_results),
         }
     return breakdown
@@ -97,6 +98,7 @@ def build_report(
         recall_at_1=compute_recall_at_k(results, 1),
         recall_at_3=compute_recall_at_k(results, 3),
         recall_at_5=compute_recall_at_k(results, 5),
+        recall_at_10=compute_recall_at_k(results, 10),
         citation_accuracy=compute_citation_accuracy(results),
         abstention_precision=abstention["precision"],
         abstention_recall=abstention["recall"],

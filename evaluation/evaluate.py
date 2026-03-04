@@ -59,7 +59,7 @@ async def evaluate_single(
 
     # Compute recall@k
     recall_at_k = {}
-    for k in (1, 3, 5):
+    for k in (1, 3, 5, 10):
         top_k_pages = set(retrieved_pages[:k])
         recall_at_k[k] = bool(top_k_pages & set(item.source_pages))
 
@@ -115,6 +115,7 @@ def format_report_markdown(report) -> str:
         f"- Recall@1: {report.recall_at_1:.1%}",
         f"- Recall@3: {report.recall_at_3:.1%}",
         f"- Recall@5: {report.recall_at_5:.1%}",
+        f"- Recall@10: {report.recall_at_10:.1%}",
         "",
         "## Quality",
         f"- Citation accuracy: {report.citation_accuracy:.1%}",

@@ -58,6 +58,7 @@ class EvaluationReport(BaseModel):
     recall_at_1: float = 0.0
     recall_at_3: float = 0.0
     recall_at_5: float = 0.0
+    recall_at_10: float = 0.0
     avg_faithfulness: float | None = None
     citation_accuracy: float = 0.0
     abstention_precision: float = 0.0
