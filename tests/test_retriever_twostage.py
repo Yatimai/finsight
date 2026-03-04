@@ -318,75 +318,15 @@ class TestEncodeQuery:
 
 
 # ---------------------------------------------------------------------------
-# TestDocumentFiltering
+# TestRetrieveNoDocumentFiltering
 # ---------------------------------------------------------------------------
 
 
-def _make_page(point_id: int, document_id: str, score: float = 0.9) -> RetrievedPage:
-    """Create a RetrievedPage with a specific document_id."""
-    return RetrievedPage(
-        point_id=point_id,
-        document_id=document_id,
-        source_filename=f"{document_id}.pdf",
-        page_number=point_id,
-        total_pages=100,
-        image_path=f"/tmp/{document_id}_p{point_id}.png",
-        score=score,
-    )
+class TestRetrieveNoDocumentFiltering:
+    """Verify retrieve() returns results sorted by score without document filtering."""
 
-
-class TestDocumentFiltering:
-    """Tests for _filter_by_majority_document."""
-
-    def _make_retriever(self) -> Retriever:
-        config = _make_config()
-        mock_client = MagicMock()
-        return Retriever(config, qdrant_client=mock_client)
-
-    def test_filters_minority_document(self):
-        """4 pages doc_A + 2 pages doc_B → only doc_A pages remain."""
-        retriever = self._make_retriever()
-        pages = [
-            _make_page(1, "doc_A"),
-            _make_page(2, "doc_A"),
-            _make_page(3, "doc_B"),
-            _make_page(4, "doc_A"),
-            _make_page(5, "doc_B"),
-            _make_page(6, "doc_A"),
-        ]
-        filtered = retriever._filter_by_majority_document(pages)
-        assert len(filtered) == 4
-        assert all(p.document_id == "doc_A" for p in filtered)
-
-    def test_keeps_both_on_tie(self):
-        """3 pages doc_A + 3 pages doc_B → all 6 kept."""
-        retriever = self._make_retriever()
-        pages = [
-            _make_page(1, "doc_A"),
-            _make_page(2, "doc_B"),
-            _make_page(3, "doc_A"),
-            _make_page(4, "doc_B"),
-            _make_page(5, "doc_A"),
-            _make_page(6, "doc_B"),
-        ]
-        filtered = retriever._filter_by_majority_document(pages)
-        assert len(filtered) == 6
-
-    def test_single_document_unchanged(self):
-        """All pages from same doc → nothing filtered."""
-        retriever = self._make_retriever()
-        pages = [_make_page(i, "doc_X") for i in range(5)]
-        filtered = retriever._filter_by_majority_document(pages)
-        assert len(filtered) == 5
-
-    def test_empty_pages_unchanged(self):
-        """Empty list → empty list."""
-        retriever = self._make_retriever()
-        filtered = retriever._filter_by_majority_document([])
-        assert filtered == []
-
-    def test_retrieve_applies_filtering(self):
-        """retrieve() integrates document filtering: multi-doc input → single-doc output."""
+    def test_retrieve_returns_mixed_documents(self):
+        """retrieve() keeps pages from all documents, sorted by score, truncated to top_k."""
         config = _make_config()
         mock_client = MagicMock()
 
@@ -395,7 +335,7 @@ class TestDocumentFiltering:
         collection_info.config.params.vectors = {"colqwen2": MagicMock()}
         mock_client.get_collection.return_value = collection_info
 
-        # search_single returns 6 pages: 4 doc_A + 2 doc_B
+        # search_single returns 6 pages: 4 doc_A + 2 doc_B, ordered by score
         mock_results = MagicMock()
         mock_results.points = [
             _make_scored_point(1, 0.95, document_id="doc_A"),
@@ -413,6 +353,8 @@ class TestDocumentFiltering:
         retriever = Retriever(config, encoder=mock_encoder, qdrant_client=mock_client)
         pages, _ = retriever.retrieve(["test query"], top_k=5)
 
-        # Only doc_A pages should survive (4 doc_A > 2 doc_B), truncated to top_k=5
-        assert all(p.document_id == "doc_A" for p in pages)
-        assert len(pages) == 4  # 4 doc_A pages, less than top_k=5
+        # All top-5 pages kept regardless of document_id
+        assert len(pages) == 5
+        doc_ids = {p.document_id for p in pages}
+        assert "doc_A" in doc_ids
+        assert "doc_B" in doc_ids
