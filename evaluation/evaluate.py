@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from evaluation.metrics import build_report
-from evaluation.models import EvaluationResult, GroundTruthItem
+from evaluation.models import EvaluationResult, GroundTruthItem, RetrievedSource
 
 DEFAULT_GT_PATH = Path("evaluation/ground_truth.json")
 DEFAULT_OUTPUT_DIR = Path("evaluation/results")
@@ -56,12 +56,16 @@ async def evaluate_single(
     )
 
     retrieved_pages = [p.page_number for p in query_result.pages]
+    retrieved_sources = [RetrievedSource(document=p.source_filename, page=p.page_number) for p in query_result.pages]
 
-    # Compute recall@k
+    # Expected (document, page) pairs from ground truth
+    expected_pairs = {(item.source_document, p) for p in item.source_pages}
+
+    # Compute recall@k — match on (document, page) pairs, not just page number
     recall_at_k = {}
     for k in (1, 3, 5, 10):
-        top_k_pages = set(retrieved_pages[:k])
-        recall_at_k[k] = bool(top_k_pages & set(item.source_pages))
+        top_k_pairs = {(s.document, s.page) for s in retrieved_sources[:k]}
+        recall_at_k[k] = bool(top_k_pairs & expected_pairs)
 
     # Citation analysis
     cited_pages: list[int] = []
@@ -69,7 +73,10 @@ async def evaluate_single(
     if not retrieval_only and query_result.answer:
         cited_pages = [c.get("page", 0) for c in query_result.citations]
         if item.source_pages and cited_pages:
-            citation_correct = bool(set(cited_pages) & set(item.source_pages))
+            # Citations only have page numbers — check pages AND that the right document is retrieved
+            cited_set = set(cited_pages)
+            retrieved_doc_pages = {(s.document, s.page) for s in retrieved_sources}
+            citation_correct = bool({(item.source_document, p) for p in cited_set} & retrieved_doc_pages)
 
     # Abstention detection
     abstention_keywords = [
@@ -91,6 +98,7 @@ async def evaluate_single(
     return EvaluationResult(
         question_id=item.id,
         retrieved_pages=retrieved_pages,
+        retrieved_sources=retrieved_sources,
         recall_at_k=recall_at_k,
         generated_answer=query_result.answer if not retrieval_only else "",
         faithfulness_score=faithfulness_score,

@@ -35,11 +35,19 @@ class GroundTruthItem(BaseModel):
         return v
 
 
+class RetrievedSource(BaseModel):
+    """A retrieved (document, page) pair for evaluation."""
+
+    document: str
+    page: int
+
+
 class EvaluationResult(BaseModel):
     """Result of evaluating a single question."""
 
     question_id: str
     retrieved_pages: list[int] = Field(default_factory=list)
+    retrieved_sources: list[RetrievedSource] = Field(default_factory=list)
     recall_at_k: dict[int, bool] = Field(default_factory=dict)
     generated_answer: str = ""
     faithfulness_score: float | None = None

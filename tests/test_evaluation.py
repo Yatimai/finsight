@@ -390,6 +390,7 @@ class TestEvaluateSingle:
         item = GroundTruthItem(
             id="q01",
             question="Quel est le CA de LVMH ?",
+            source_document="LVMH_DEU_2024.pdf",
             source_pages=[12],
             category="chiffre_exact",
         )
@@ -438,6 +439,7 @@ class TestEvaluateSingle:
         item = GroundTruthItem(
             id="q01",
             question="Test?",
+            source_document="LVMH_DEU_2024.pdf",
             source_pages=[5, 12],
             category="chiffre_exact",
         )
@@ -451,7 +453,13 @@ class TestEvaluateSingle:
     async def test_skip_verification(self):
         pages = [FakeRetrievedPage(page_number=12)]
         pipeline = _make_pipeline_mock(pages)
-        item = GroundTruthItem(id="q01", question="Test?", source_pages=[12], category="chiffre_exact")
+        item = GroundTruthItem(
+            id="q01",
+            question="Test?",
+            source_document="LVMH_DEU_2024.pdf",
+            source_pages=[12],
+            category="chiffre_exact",
+        )
 
         result = await evaluate_single(pipeline, item, skip_verification=True)
 
@@ -463,13 +471,104 @@ class TestEvaluateSingle:
     async def test_retrieval_only_no_answer(self):
         pages = [FakeRetrievedPage(page_number=12)]
         pipeline = _make_pipeline_mock(pages)
-        item = GroundTruthItem(id="q01", question="Test?", source_pages=[12], category="chiffre_exact")
+        item = GroundTruthItem(
+            id="q01",
+            question="Test?",
+            source_document="LVMH_DEU_2024.pdf",
+            source_pages=[12],
+            category="chiffre_exact",
+        )
 
         result = await evaluate_single(pipeline, item, retrieval_only=True)
 
         assert result.generated_answer == ""
         # skip_verification=True when retrieval_only
         pipeline.query.assert_called_once_with(item.question, skip_verification=True)
+
+
+class TestRecallDocumentAware:
+    """Regression: recall must match (document, page) pairs, not just page numbers."""
+
+    @pytest.mark.asyncio
+    async def test_wrong_document_same_page_is_not_a_hit(self):
+        """Page 4 from TotalEnergies != page 4 from LVMH."""
+        pages = [FakeRetrievedPage(page_number=4, source_filename="TotalEnergies_DEU_2024.pdf")]
+        pipeline = _make_pipeline_mock(pages, citations=[])
+        item = GroundTruthItem(
+            id="q01",
+            question="CA LVMH 2024 ?",
+            category="chiffre_exact",
+            source_document="LVMH_DEU_2024.pdf",
+            source_pages=[4],
+        )
+
+        result = await evaluate_single(pipeline, item, retrieval_only=True)
+
+        assert result.recall_at_k[1] is False
+        assert result.recall_at_k[5] is False
+
+    @pytest.mark.asyncio
+    async def test_correct_document_and_page_is_a_hit(self):
+        """Page 4 from LVMH matches GT (LVMH, page 4)."""
+        pages = [FakeRetrievedPage(page_number=4, source_filename="LVMH_DEU_2024.pdf")]
+        pipeline = _make_pipeline_mock(pages, citations=[])
+        item = GroundTruthItem(
+            id="q01",
+            question="CA LVMH 2024 ?",
+            category="chiffre_exact",
+            source_document="LVMH_DEU_2024.pdf",
+            source_pages=[4],
+        )
+
+        result = await evaluate_single(pipeline, item, retrieval_only=True)
+
+        assert result.recall_at_k[1] is True
+
+    @pytest.mark.asyncio
+    async def test_correct_page_at_rank_3_wrong_doc_at_rank_1(self):
+        """Wrong doc page 4 at rank 1, correct doc page 4 at rank 3."""
+        pages = [
+            FakeRetrievedPage(page_number=4, source_filename="TotalEnergies_DEU_2024.pdf"),
+            FakeRetrievedPage(page_number=10, source_filename="Sanofi_DEU_2024.pdf"),
+            FakeRetrievedPage(page_number=4, source_filename="LVMH_DEU_2024.pdf"),
+        ]
+        pipeline = _make_pipeline_mock(pages, citations=[])
+        item = GroundTruthItem(
+            id="q01",
+            question="CA LVMH 2024 ?",
+            category="chiffre_exact",
+            source_document="LVMH_DEU_2024.pdf",
+            source_pages=[4],
+        )
+
+        result = await evaluate_single(pipeline, item, retrieval_only=True)
+
+        assert result.recall_at_k[1] is False
+        assert result.recall_at_k[3] is True
+
+    @pytest.mark.asyncio
+    async def test_retrieved_sources_populated(self):
+        """retrieved_sources stores (document, page) pairs for debugging."""
+        pages = [
+            FakeRetrievedPage(page_number=4, source_filename="LVMH_DEU_2024.pdf"),
+            FakeRetrievedPage(page_number=10, source_filename="Sanofi_DEU_2024.pdf"),
+        ]
+        pipeline = _make_pipeline_mock(pages, citations=[])
+        item = GroundTruthItem(
+            id="q01",
+            question="test",
+            category="chiffre_exact",
+            source_document="LVMH_DEU_2024.pdf",
+            source_pages=[4],
+        )
+
+        result = await evaluate_single(pipeline, item, retrieval_only=True)
+
+        assert len(result.retrieved_sources) == 2
+        assert result.retrieved_sources[0].document == "LVMH_DEU_2024.pdf"
+        assert result.retrieved_sources[0].page == 4
+        assert result.retrieved_sources[1].document == "Sanofi_DEU_2024.pdf"
+        assert result.retrieved_sources[1].page == 10
 
 
 class TestLoadGroundTruth:
