@@ -15,7 +15,7 @@ class RetrievalConfig(BaseModel):
     top_k: int = 10
     max_candidates: int = 50
     mask_non_image_embeddings: bool = True
-    prefetch_k: int = 100
+    prefetch_k: int = 500
     border_crop: bool = True
 
 
