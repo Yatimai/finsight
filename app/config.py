@@ -20,7 +20,7 @@ class RetrievalConfig(BaseModel):
 
 
 class RewritingConfig(BaseModel):
-    enabled: bool = True
+    enabled: bool = False
     max_rewrites: int = 3
     rrf_k: int = 60
 
