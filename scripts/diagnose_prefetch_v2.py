@@ -39,7 +39,7 @@ def find_gt_rank_in_prefetch(
         limit=prefetch_k,
     )
     for rank, pt in enumerate(response.points, 1):
-        if pt.payload["source_filename"] == source_doc and pt.payload["page_number"] in source_pages:
+        if pt.payload["source_filename"] == source_doc and int(pt.payload["page_number"]) in source_pages:
             return str(rank)
     return "absent"
 
@@ -89,7 +89,7 @@ def main() -> None:
         qid = item["id"]
         question = item["question"]
         source_doc = item["source_document"]
-        source_pages = set(item["source_pages"])
+        source_pages = {int(p) for p in item["source_pages"]}
 
         qe = retriever.encode_query(question)
 
@@ -102,7 +102,7 @@ def main() -> None:
             search_params=SearchParams(exact=True),
         )
         exact_hit = any(
-            pt.payload["source_filename"] == source_doc and pt.payload["page_number"] in source_pages
+            pt.payload["source_filename"] == source_doc and int(pt.payload["page_number"]) in source_pages
             for pt in exact_response.points
         )
 
@@ -122,7 +122,7 @@ def main() -> None:
             search_params=SearchParams(exact=True),
         )
         prefetch_hit = any(
-            pt.payload["source_filename"] == source_doc and pt.payload["page_number"] in source_pages
+            pt.payload["source_filename"] == source_doc and int(pt.payload["page_number"]) in source_pages
             for pt in prefetch_response.points
         )
 
