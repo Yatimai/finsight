@@ -68,7 +68,7 @@
     "question": "Quelle est la répartition géographique du chiffre d'affaires de L'Oréal ?",
     "category": "tableau",
     "source_document": "LOreal_DEU_2024.pdf",
-    "source_pages": [39],
+    "source_pages": [39, 17, 19],
     "expected_answer": "CA 2024 par zone : Europe 14 211,4 M€ (32,7 %), Amérique du Nord 11 805,2 M€ (27,1 %), Asie du Nord 10 303,4 M€ (23,7 %), SAPMENA-SSA 3 863,0 M€ (8,9 %), Amérique Latine 3 303,9 M€ (7,6 %) (p.39)."
   },
   {
@@ -124,7 +124,7 @@
     "question": "Quel est le chiffre d'affaires net de Danone en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "Danone_DEU_2024.pdf",
-    "source_pages": [5, 55],
+    "source_pages": [5, 55, 58, 76],
     "expected_answer": "CA net Danone 2024 : 27 376 M€, -0,9 % en publié mais +4,3 % en comparable vs 2023 (27 619 M€) (p.5, p.55)."
   },
   {
@@ -140,7 +140,7 @@
     "question": "Quelle est la croissance en données comparables (like-for-like) de Danone par catégorie de produits ?",
     "category": "comparaison",
     "source_document": "Danone_DEU_2024.pdf",
-    "source_pages": [57],
+    "source_pages": [57, 59],
     "expected_answer": "Croissance comparable 2024 par catégorie : EDP +3,8 % (volume/mix +2,7 %), Nutrition Spécialisée +4,6 % (volume/mix +3,4 %), Eaux +5,1 % (volume/mix +2,9 %). Total : +4,3 % (volume/mix +3,0 %) (p.57)."
   },
   {
@@ -156,7 +156,7 @@
     "question": "Quelle est la répartition géographique du chiffre d'affaires de Danone ?",
     "category": "tableau",
     "source_document": "Danone_DEU_2024.pdf",
-    "source_pages": [56],
+    "source_pages": [56, 96],
     "expected_answer": "CA 2024 par zone : Europe 9 568 M€ (34,9 %), Amérique du Nord 6 579 M€ (24,0 %), Chine/Asie du Nord/Océanie 3 694 M€ (13,5 %), Amérique latine 3 029 M€ (11,1 %), Reste du Monde 4 506 M€ (16,5 %) (p.56)."
   },
   {
@@ -188,7 +188,7 @@
     "question": "Quels sont les résultats comparés des pôles Banque de détail en France, Banque de Grande Clientèle et Solutions Investisseurs, et Boursorama de Société Générale ?",
     "category": "comparaison",
     "source_document": "SocieteGenerale_DEU_2024.pdf",
-    "source_pages": [32, 33, 36],
+    "source_pages": [32, 33, 36, 6],
     "expected_answer": "GBIS : PNB record 10 122 M€ (+5,0 %), RNPG 2 788 M€, RONE 18,4 %. Banque de détail France/BP/Assurances : PNB 8 657 M€ (+7,5 %), RNPG 991 M€, RONE 6,3 %. Mobilité/BDI/SF International : PNB 8 458 M€ (-0,6 %), RNPG 1 270 M€, RONE 12,2 %. BoursoBank : 7,2 M clients, contribution nette positive (p.32, p.33, p.36)."
   },
   {
@@ -244,7 +244,7 @@
     "question": "Quel est le chiffre d'affaires total de Carrefour en 2024 ?",
     "category": "chiffre_exact",
     "source_document": "Carrefour_DEU_2024.pdf",
-    "source_pages": [8, 398],
+    "source_pages": [8, 398, 52, 447],
     "expected_answer": "CA total Carrefour 2024 : 94 550 M€ TTC et 85 445 M€ HT, +9,9 % en LFL et +2,6 % en publié HT (p.8, p.398)."
   },
   {
@@ -260,7 +260,7 @@
     "question": "Combien de magasins Carrefour exploite-t-il dans le monde fin 2024 ?",
     "category": "chiffre_exact",
     "source_document": "Carrefour_DEU_2024.pdf",
-    "source_pages": [8, 48],
+    "source_pages": [8, 48, 9, 10],
     "expected_answer": "Carrefour exploite 15 244 magasins sous enseignes fin 2024 : 6 468 en France, 6 083 en Europe hors France, 1 451 en Amérique latine, 1 242 via partenaires. 3 548 intégrés et 11 696 franchisés (p.8, p.48)."
   },
   {
@@ -292,7 +292,7 @@
     "question": "Comment a évolué la production d'hydrocarbures de TotalEnergies entre 2023 et 2024 ?",
     "category": "tendance",
     "source_document": "TotalEnergies_DEU_2024.pdf",
-    "source_pages": [8, 51],
+    "source_pages": [8, 51, 9],
     "expected_answer": "Production hydrocarbures : 2 483 kbep/j en 2023 → 2 434 kbep/j en 2024 (-2 %). Hors cession Canada (-3,5 %), +2 % portée par Mero 2, Mero 3, Anchor, Fenix (p.8, p.51)."
   },
   {
@@ -332,7 +332,7 @@
     "question": "Comment a évolué la croissance organique de Schneider Electric entre 2023 et 2024 ?",
     "category": "tendance",
     "source_document": "SchneiderElectric_DEU_2024.pdf",
-    "source_pages": [14, 15],
+    "source_pages": [14, 15, 455, 570],
     "expected_answer": "Croissance organique 2024 : +8,4 %, dépassant l'objectif de +6 % à +8 %. CA de 35,9 Md€ (2023) à 38,2 Md€ (2024), +6,3 % en publié (p.14, p.15)."
   },
   {
@@ -340,7 +340,7 @@
     "question": "Comment se comparent les performances des divisions Energy Management et Industrial Automation de Schneider Electric ?",
     "category": "comparaison",
     "source_document": "SchneiderElectric_DEU_2024.pdf",
-    "source_pages": [15, 16],
+    "source_pages": [15, 16, 528],
     "expected_answer": "Energy Management (82 % du CA, 31 131 M€) : +12 % organique, marge EBITA ajusté 22,1 % (+110 pb). Industrial Automation (18 %, 7 022 M€) : -4 % organique, marge 14,8 % (-150 pb), impacté par le marché manufacturier (p.15, p.16)."
   },
   {
@@ -388,7 +388,7 @@
     "question": "Comment se comparent les performances des divisions Airbus (Commercial Aircraft, Helicopters, Defence and Space) ?",
     "category": "comparaison",
     "source_document": "Airbus_Annual_Report_2024.pdf",
-    "source_pages": [17, 18, 124],
+    "source_pages": [17, 18, 124, 31],
     "expected_answer": "Commercial Aircraft (73 % CA) : revenus 50 646 M€ (+6 %), EBIT ajusté 5 093 M€, 766 livraisons. Helicopters (11 %) : 7 941 M€ (+8 %), EBIT 818 M€, marge 10,3 %. Defence and Space (17 %) : 12 082 M€ (+5 %), EBIT -566 M€, order intake record 16 710 M€ (p.17, p.18, p.124)."
   },
   {
