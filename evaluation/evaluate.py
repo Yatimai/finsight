@@ -168,6 +168,11 @@ async def async_main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Only test retrieval, skip generation (free)",
     )
+    parser.add_argument(
+        "--no-rewriter",
+        action="store_true",
+        help="Disable query rewriting (raw query only, no RAG Fusion)",
+    )
     args = parser.parse_args(argv)
 
     # Load ground truth
@@ -184,6 +189,9 @@ async def async_main(argv: list[str] | None = None) -> int:
 
     config = get_config()
     pipeline = Pipeline(config)
+
+    if args.no_rewriter:
+        pipeline.rewriter.enabled = False
 
     # Evaluate
     results: list[EvaluationResult] = []
