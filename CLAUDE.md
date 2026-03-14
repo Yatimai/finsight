@@ -111,7 +111,7 @@ Résultats dans `evaluation/results/` (gitignored).
 
 - 50 questions, 48 avec réponse, 2 abstentions (q47, q50)
 - **Non-circulaire** : les `source_pages` ont été extraites en lisant directement les PDFs (pas le retriever)
-- `source_pages` limitées à 1-3 pages par question (recall mesuré rigoureusement)
+- `source_pages` limitées à 1-4 pages par question (recall mesuré rigoureusement)
 - q23 (cours action SocGen) et q39 (prix Brent) reclassées de `abstention` vers `chiffre_exact` (données trouvées dans les PDFs)
 - `source_document` correspond aux noms de fichiers dans Qdrant (ex : `LVMH_DEU_2024.pdf`)
 - Page numbers = physical PDF pages (1-indexed), matching `page_number` in Qdrant

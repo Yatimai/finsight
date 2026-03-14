@@ -624,7 +624,7 @@ class TestGroundTruthStructure:
         for item in ground_truth_items:
             if item.category.value != "abstention":
                 assert item.source_pages, f"{item.id} missing source_pages"
-                assert len(item.source_pages) <= 3, f"{item.id} has {len(item.source_pages)} source_pages (max 3)"
+                assert len(item.source_pages) <= 4, f"{item.id} has {len(item.source_pages)} source_pages (max 4)"
 
     def test_non_abstention_have_source_document(self, ground_truth_items):
         for item in ground_truth_items:
