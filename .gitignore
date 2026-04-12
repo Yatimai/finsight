@@ -1,0 +1,55 @@
+# Data (too large for git)
+data/
+*.pdf
+
+# Config with secrets
+config.yaml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.next/
+
+# Logs
+*.log
+logs/
+
+# Evaluation results
+evaluation/results/
+
+# Testing/Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Claude Code
+CLAUDE.md
+DESIGN.md
+ROADMAP.md
+
+# Internal scripts & artifacts
+scripts/
+tmp_diag/
+*.snapshot
+.git.backup/
+AUDIT.md
+MEMORY_INDEXING.md
+mailmap.txt
