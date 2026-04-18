@@ -305,6 +305,7 @@ class Pipeline:
                 if event_type == "token":
                     yield ("token", {"text": payload})
                 elif event_type == "final":
+                    assert isinstance(payload, dict), "generate_stream emits dict payload for 'final' events"
                     result.answer = payload["answer"]
                     result.citations = payload["citations"]
                     result.generation_tokens = {
