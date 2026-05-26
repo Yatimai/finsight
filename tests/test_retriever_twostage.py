@@ -169,6 +169,32 @@ class TestTwoStageSearch:
         assert pf.query == qe.pooled.tolist()
         assert isinstance(pf.query[0], float)
 
+    def test_two_stage_search_pooled_prefetch(self):
+        """With prefetch_using='pooled', prefetch uses the pooled multivector (query = full filtered)."""
+        config = _make_config()
+        config.retrieval.prefetch_using = "pooled"
+        mock_client = MagicMock()
+        collection_info = MagicMock()
+        collection_info.config.params.vectors = {
+            "colqwen2": MagicMock(),
+            "pooled": MagicMock(),
+            "global": MagicMock(),
+        }
+        mock_client.get_collection.return_value = collection_info
+        mock_results = MagicMock()
+        mock_results.points = [_make_scored_point(1)]
+        mock_client.query_points.return_value = mock_results
+
+        retriever = Retriever(config, qdrant_client=mock_client)
+        qe = _make_query_embedding()
+        retriever.search_single(qe, top_k=5)
+
+        pf = mock_client.query_points.call_args[1]["prefetch"][0]
+        assert pf.using == "pooled"
+        # Prefetch query is the full multivector (list of lists), not a single mean vector
+        assert pf.query == qe.filtered.tolist()
+        assert isinstance(pf.query[0], list)
+
     def test_search_single_returns_retrieved_pages(self):
         """search_single returns properly formatted RetrievedPage objects."""
         config = _make_config()

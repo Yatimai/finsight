@@ -16,6 +16,9 @@ class RetrievalConfig(BaseModel):
     mask_non_image_embeddings: bool = True
     prefetch_k: int = 500
     border_crop: bool = True
+    # First-stage prefetch vector: "pooled" (tile-level multivector MaxSim, recommended,
+    # recall@10 92%) or "global" (single mean vector, legacy default).
+    prefetch_using: str = "global"
 
 
 class GenerationConfig(BaseModel):

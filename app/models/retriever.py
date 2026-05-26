@@ -137,6 +137,13 @@ class Retriever:
 
         if self.has_global_vector:
             prefetch_k = self.config.retrieval.prefetch_k
+            # First-stage prefetch on the configured coarse vector:
+            # "pooled" → tile-level multivector MaxSim (query = full multivector),
+            # "global" → single mean vector cosine (query = pooled single vector).
+            prefetch_using = self.config.retrieval.prefetch_using
+            prefetch_query = (
+                query_embedding.filtered if prefetch_using == "pooled" else query_embedding.pooled
+            ).tolist()
             results = self.client.query_points(
                 collection_name=self.collection_name,
                 query=query_embedding.filtered.tolist(),
@@ -144,8 +151,8 @@ class Retriever:
                 limit=top_k,
                 prefetch=[
                     Prefetch(
-                        query=query_embedding.pooled.tolist(),
-                        using="global",
+                        query=prefetch_query,
+                        using=prefetch_using,
                         limit=prefetch_k,
                     )
                 ],

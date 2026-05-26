@@ -39,7 +39,14 @@ def extract_text_from_response(response) -> str:
     """
     if not response.content:
         raise EmptyResponseError("Empty content list from Anthropic API")
-    return response.content[0].text
+    # Skip non-text blocks (e.g. thinking blocks when extended thinking is enabled)
+    for block in response.content:
+        if getattr(block, "type", None) == "text":
+            return block.text
+    for block in response.content:
+        if hasattr(block, "text"):
+            return block.text
+    raise EmptyResponseError("No text block in Anthropic API response")
 
 
 async def call_anthropic_with_retry(

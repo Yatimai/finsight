@@ -5,18 +5,22 @@ retrieval:
   model: "vidore/colqwen2.5-v0.2"
   top_k: 10                         # Pages returned per query
   mask_non_image_embeddings: true   # Filter non-visual tokens (prompt, special)
-  prefetch_k: 500                   # Two-stage search: prefetch candidates (90% recall@10 on 50 questions)
+  prefetch_k: 500                   # Two-stage search: prefetch candidates
+  prefetch_using: "pooled"          # First-stage vector: "pooled" (recommended, recall@10 92%) or "global"
   border_crop: true                 # Remove white margins before encoding
 
 generation:
-  model: "claude-sonnet-4-5-20250929"
+  # Latest Opus as generator (84% strict answer-accuracy).
+  # NB: Opus 4.7 deprecates the `temperature` parameter (handled in generator.py).
+  model: "claude-opus-4-7"
   max_tokens: 1024
   temperature: 0.0
 
 verification:
-  model: "claude-opus-4-6"
+  # Latest Sonnet as independent background verifier (different model from the generator).
+  model: "claude-sonnet-4-6"
   fallback_models:
-    - "claude-opus-4-5-20250929"
+    - "claude-sonnet-4-5-20250929"
   enabled: true
   confidence_threshold: 0.7
   abstention_message: "Cette information n'apparaît pas dans les documents fournis."

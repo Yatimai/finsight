@@ -6,6 +6,7 @@ grounded, cited responses.
 
 import re
 from collections.abc import AsyncIterator
+from typing import Any
 
 import anthropic
 
@@ -77,10 +78,9 @@ class Generator:
         content = self._build_content(query, pages, conversation_history)
 
         async def _api_call():
-            response = await self.client.messages.create(
+            kwargs: dict[str, Any] = dict(
                 model=self.config.generation.model,
                 max_tokens=self.config.generation.max_tokens,
-                temperature=self.config.generation.temperature,
                 system=[
                     {
                         "type": "text",
@@ -90,6 +90,10 @@ class Generator:
                 ],
                 messages=[{"role": "user", "content": content}],
             )
+            # Opus 4.7 deprecates the temperature parameter
+            if "opus-4-7" not in self.config.generation.model:
+                kwargs["temperature"] = self.config.generation.temperature
+            response = await self.client.messages.create(**kwargs)
             return response
 
         response = await call_anthropic_with_retry(
